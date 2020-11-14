@@ -1,0 +1,13 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+const url_api = "https://focuseg.com.br/flutter/chamadas_json.php?idProf=";
+
+class API {
+  static Future getChamadas() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String idProf = prefs.getString('idusu');
+    var url = url_api + idProf;
+    return await http.get(url);
+  }
+}
