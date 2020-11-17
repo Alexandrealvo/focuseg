@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/mapa_agenda.dart';
+import 'package:focus/src/services/api_calendario.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -21,10 +22,14 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   CalendarController _calendarController;
   bool isLoading = true;
 
+  // ApiCalendario calendario_api = new ApiCalendario();
+
   @override
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
+    // calendario_api.getAll();
+    // _getCalendario()
 
     getData();
 
@@ -46,6 +51,13 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     _calendarController.dispose();
     super.dispose();
   }
+
+  // _getCalendario() {
+  //   calendario_api.getAll().then((value) {
+  //     Iterable lista = json.decode(value.data);
+  //     lista.map((model) => Dados_Agenda.fromJson(model)).toList();
+  //   });
+  // }
 
   void _onDaySelected(DateTime day, List events, List holidays) {
     print('CALLBACK: _onDaySelected');
@@ -156,38 +168,38 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildEventsMarker(DateTime date, List events) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: _calendarController.isSelected(date)
-            ? Colors.brown[500]
-            : _calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
-      ),
-      width: 16.0,
-      height: 16.0,
-      child: Center(
-        child: Text(
-          '${events.length}',
-          style: TextStyle().copyWith(
-            color: Colors.white,
-            fontSize: 12.0,
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildEventsMarker(DateTime date, List events) {
+  //   return AnimatedContainer(
+  //     duration: const Duration(milliseconds: 300),
+  //     decoration: BoxDecoration(
+  //       shape: BoxShape.rectangle,
+  //       color: _calendarController.isSelected(date)
+  //           ? Colors.brown[500]
+  //           : _calendarController.isToday(date)
+  //               ? Colors.brown[300]
+  //               : Colors.blue[400],
+  //     ),
+  //     width: 16.0,
+  //     height: 16.0,
+  //     child: Center(
+  //       child: Text(
+  //         '${events.length}',
+  //         style: TextStyle().copyWith(
+  //           color: Colors.white,
+  //           fontSize: 12.0,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildHolidaysMarker() {
-    return Icon(
-      Icons.add_box,
-      size: 20.0,
-      color: Colors.blueGrey[800],
-    );
-  }
+  // Widget _buildHolidaysMarker() {
+  //   return Icon(
+  //     Icons.add_box,
+  //     size: 20.0,
+  //     color: Colors.blueGrey[800],
+  //   );
+  // }
 
   Widget _buildEventList() {
     return ListView(
