@@ -5,6 +5,7 @@ import 'package:focus/src/components/home_widget_bottomtab.dart';
 import 'package:focus/src/components/senha.dart';
 import 'package:focus/src/pages/calendario.dart';
 import 'package:focus/src/pages/chamadas.dart';
+import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:focus/src/pages/mapa.dart';
 import 'package:focus/src/pages/servicos.dart';
 import 'login.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/servicos': (context) => Servicos(),
         '/calendario': (context) => Calendario(),
         '/mapa': (context) => Mapa(),
+        '/mapa_agenda': (context) => MapaAgenda(),
       },
     );
   }

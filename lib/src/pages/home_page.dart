@@ -59,14 +59,14 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       Navigator.of(context).pop();
       EdgeAlert.show(context,
-          title: 'Imagem do perfil alterada',
+          title: 'Imagem Alterada',
           gravity: EdgeAlert.BOTTOM,
           backgroundColor: Colors.green,
           icon: Icons.check);
     } else {
       Navigator.of(context).pop();
       EdgeAlert.show(context,
-          title: 'Imagem não enviada',
+          title: 'Imagem não Enviada',
           gravity: EdgeAlert.BOTTOM,
           backgroundColor: Colors.red,
           icon: Icons.highlight_off);

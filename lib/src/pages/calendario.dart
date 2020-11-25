@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:focus/src/components/mapa_agenda.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:focus/src/components/mapa_mapagenda.dart';
+import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
@@ -14,9 +14,8 @@ class Calendario extends StatefulWidget {
 }
 
 class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
-  Map<DateTime, List> _events;
-  var agenda = new List<Dados_Agenda>();
-  List _selectedEvents;
+  Map<DateTime, List<dynamic>> _events;
+  List<dynamic> _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
   bool isLoading = true;
@@ -24,14 +23,12 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final _selectedDay = DateTime.now();
+    //final _selectedDay = DateTime.now();
+    _calendarController = CalendarController();
 
     getData();
 
-    _selectedEvents = _events[_selectedDay] ?? [];
-
-    _calendarController = CalendarController();
-
+    _selectedEvents = [];
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -67,27 +64,38 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
   Future getData() async {
     _events = {};
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idProf = prefs.getString('idusu');
     final response = await http
         .get("http://focuseg.com.br/flutter/agenda_json.php?idProf=$idProf");
 
-    Iterable lista = json.decode(response.body);
-    agenda = lista.map((model) => Dados_Agenda.fromJson(model)).toList();
-
     setState(() {
-      var jsonData = json.decode(response.body);
-      for (var jsonElement in jsonData) {
+      var lista = json.decode(response.body);
+      //agenda = lista.map((model) => Dados_Agenda.fromJson(model)).toList();
+      //var jsonData = json.decode(response.body);
+
+      for (var jsonElement in lista) {
         _events
             .putIfAbsent(
               DateTime.parse(jsonElement['data_agenda']),
               () => [],
             )
-            .add(jsonElement['cliente']);
+            .add(
+                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['hora_agenda']}h");
       }
-
+      //print(lista[0]['idos']);
       isLoading = false;
     });
+  }
+
+  void _abrir_mapa(idOs) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('idOs', idOs);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return MapaAgenda();
+    }));
   }
 
   @override
@@ -113,68 +121,125 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                 ),
               ),
             )
-          : Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                // Switch out 2 lines below to play with TableCalendar's settings
-                //-----------------------
-                _buildTableCalendar(),
-
-                // _buildTableCalendarWithBuilders(),
-                //const SizedBox(height: 8.0),
-                const SizedBox(height: 8.0),
-                Expanded(child: _buildEventList()),
-              ],
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _buildTableCalendarWithBuilders(),
+                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
+                  Expanded(child: _buildEventList()),
+                ],
+              ),
             ),
     );
   }
 
-  // Simple TableCalendar configuration (using Styles)
-  Widget _buildTableCalendar() {
+  Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
-      calendarController: _calendarController,
-      events: _events,
-      initialCalendarFormat: CalendarFormat.month,
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      calendarStyle: CalendarStyle(
-        selectedColor: Colors.red[400],
-        todayColor: Colors.red[200],
-        markersColor: Colors.grey,
-        outsideDaysVisible: false,
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonTextStyle:
-            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
-        formatButtonDecoration: BoxDecoration(
-          color: Colors.red[400],
-          borderRadius: BorderRadius.circular(16.0),
+        //locale: 'pl_PL',
+        calendarController: _calendarController,
+        events: _events,
+        //holidays: _holidays,
+        initialCalendarFormat: CalendarFormat.month,
+        formatAnimation: FormatAnimation.slide,
+        startingDayOfWeek: StartingDayOfWeek.sunday,
+        availableGestures: AvailableGestures.all,
+        availableCalendarFormats: const {
+          CalendarFormat.month: '',
+          CalendarFormat.week: '',
+        },
+        calendarStyle: CalendarStyle(
+          outsideDaysVisible: false,
+          weekendStyle: TextStyle().copyWith(color: Colors.blue[800]),
+          holidayStyle: TextStyle().copyWith(color: Colors.blue[800]),
         ),
-      ),
-      onDaySelected: _onDaySelected,
-      onVisibleDaysChanged: _onVisibleDaysChanged,
-      onCalendarCreated: _onCalendarCreated,
-    );
+        daysOfWeekStyle: DaysOfWeekStyle(
+          weekendStyle: TextStyle().copyWith(color: Colors.blue[600]),
+        ),
+        headerStyle: HeaderStyle(
+          centerHeaderTitle: true,
+          formatButtonVisible: false,
+        ),
+        builders: CalendarBuilders(
+          selectedDayBuilder: (context, date, _) {
+            return FadeTransition(
+              opacity:
+                  Tween(begin: 0.0, end: 1.0).animate(_animationController),
+              child: Container(
+                margin: const EdgeInsets.all(4.0),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.red[400],
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: Text(
+                  '${date.day}',
+                  style: TextStyle().copyWith(fontSize: 16.0),
+                ),
+              ),
+            );
+          },
+          todayDayBuilder: (context, date, _events) {
+            return Container(
+              margin: const EdgeInsets.all(4.0),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Text(
+                '${date.day}',
+                style: TextStyle().copyWith(fontSize: 16.0),
+              ),
+            );
+          },
+          markersBuilder: (context, date, events, holidays) {
+            final children = <Widget>[];
+
+            if (events.isNotEmpty) {
+              children.add(
+                Positioned(
+                  right: 1,
+                  top: 1,
+                  child: _buildEventsMarker(date, events),
+                ),
+              );
+            }
+
+            if (holidays.isNotEmpty) {
+              children.add(
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: _buildHolidaysMarker(),
+                ),
+              );
+            }
+
+            return children;
+          },
+        ),
+        onDaySelected: _onDaySelected);
   }
 
   Widget _buildEventsMarker(DateTime date, List events) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
+        shape: BoxShape.circle,
         color: _calendarController.isSelected(date)
-            ? Colors.brown[500]
+            ? Colors.black
             : _calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
+                ? Colors.grey
+                : Colors.grey,
       ),
-      width: 16.0,
-      height: 16.0,
+      width: 18.0,
+      height: 18.0,
       child: Center(
         child: Text(
           '${events.length}',
           style: TextStyle().copyWith(
             color: Colors.white,
-            fontSize: 12.0,
+            fontSize: 14.0,
           ),
         ),
       ),
@@ -185,7 +250,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     return Icon(
       Icons.add_box,
       size: 20.0,
-      color: Colors.blueGrey[800],
+      color: Colors.grey,
     );
   }
 
@@ -195,17 +260,23 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
           .map((event) => Container(
                 decoration: BoxDecoration(
                   //border: Border.all(width: 0.8),
-                  color: Colors.red[900],
                   borderRadius: BorderRadius.circular(12.0),
+                  color: Colors.red[900],
                 ),
                 margin:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: ListTile(
-                  title: Text(event.toString(),
-                      style: TextStyle(color: Colors.white)),
-                  subtitle: Text(event.toString(),
-                      style: TextStyle(color: Colors.white)),
-                  onTap: () => print('Cliente: $event'),
+                  title: Text(
+                    event.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    var evento = event.split('-');
+                    var idOs = evento[0];
+                    //var descricao = evento[1];
+
+                    _abrir_mapa(idOs);
+                  },
                 ),
               ))
           .toList(),

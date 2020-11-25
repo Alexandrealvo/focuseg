@@ -1,22 +1,44 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:focus/src/components/api.mapa_agenda.dart';
+import 'package:focus/src/components/mapa_mapagenda.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Mapa extends StatefulWidget {
+class MapaAgenda extends StatefulWidget {
+  //String idOs;
+  //MapaAgenda({this.idOs});
+
   @override
-  MapaState createState() => MapaState();
+  MapaAgendaState createState() => MapaAgendaState();
 }
 
-class MapaState extends State<Mapa> {
+class MapaAgendaState extends State<MapaAgenda> {
   Completer<GoogleMapController> _controller = Completer();
+  List mapa_agenda = new List<DadosAgenda>();
+  bool isLoading = true;
+  final mapa_array = [];
+
+  _getMapaAgenda() {
+    API_MAPA_AGENDA.getMapaAgenda().then((response) {
+      setState(() {
+        Iterable lista = json.decode(response.body);
+        mapa_agenda =
+            lista.map((model) => DadosAgenda.fromJson(model)).toList();
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _getMapaAgenda();
   }
 
-  double zoomVal = 5.0;
+  double zoomVal = 10.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,47 +103,24 @@ class MapaState extends State<Mapa> {
 
   Widget _buildContainer() {
     return Align(
-      alignment: Alignment.bottomLeft,
+      alignment: Alignment.bottomCenter,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 20.0),
-        height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/greenville2.png",
-                  -1.350564,
-                  -48.452712,
-                  "Greenville II"),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/idealbr.png",
-                  -1.395115,
-                  -48.410267,
-                  "Ideal BR "),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/idealsamambaia.png",
-                  -1.3549605,
-                  -48.4200819,
-                  "Ideal Samambaia"),
-            ),
-          ],
-        ),
+        margin: EdgeInsets.symmetric(vertical: 30),
+        height: 150,
+        width: MediaQuery.of(context).size.width * .60,
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: mapa_agenda.length,
+                itemBuilder: (context, index) {
+                  return _boxes(
+                      -1.350564, -48.452712, mapa_agenda[index].cliente);
+                })),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double long, String restaurantName) {
+  Widget _boxes(double lat, double long, String cliente) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, long);
@@ -130,13 +129,13 @@ class MapaState extends State<Mapa> {
         child: new FittedBox(
           child: Material(
               color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
+              elevation: 15.0,
+              borderRadius: BorderRadius.circular(10.0),
               shadowColor: Color(0x802196F3),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
+                  /* Container(
                     width: 180,
                     height: 200,
                     child: ClipRRect(
@@ -146,11 +145,11 @@ class MapaState extends State<Mapa> {
                         image: NetworkImage(_image),
                       ),
                     ),
-                  ),
+                  ),*/
                   Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
+                      padding: const EdgeInsets.all(20.0),
+                      child: myDetailsContainer1(cliente),
                     ),
                   ),
                 ],
@@ -252,19 +251,14 @@ class MapaState extends State<Mapa> {
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(-1.4241198, -48.4647034), zoom: 12),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: {
-          greenvilleMarker,
-          idealbrMarker,
-          idealsamambaiaMarker,
-          profMarker
-        },
-      ),
+          mapType: MapType.normal,
+          initialCameraPosition:
+              CameraPosition(target: LatLng(-1.4241198, -48.4647034), zoom: 11),
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          myLocationButtonEnabled: true,
+          markers: {makerCliente}),
     );
   }
 
@@ -272,43 +266,18 @@ class MapaState extends State<Mapa> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(lat, long),
-      zoom: 16,
+      zoom: 17,
       tilt: 50.0,
       bearing: 45.0,
     )));
   }
 }
 
-Marker greenvilleMarker = Marker(
+Marker makerCliente = Marker(
   markerId: MarkerId('greenVille'),
   position: LatLng(-1.350564, -48.452712),
-  infoWindow: InfoWindow(title: 'GreenVille 2'),
+  infoWindow: InfoWindow(title: 'nome_cliente'),
   icon: BitmapDescriptor.defaultMarkerWithHue(
     BitmapDescriptor.hueRed,
-  ),
-);
-
-Marker idealbrMarker = Marker(
-  markerId: MarkerId('ideal_br'),
-  position: LatLng(-1.395115, -48.410267),
-  infoWindow: InfoWindow(title: 'Ideal BR'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueRed,
-  ),
-);
-Marker idealsamambaiaMarker = Marker(
-  markerId: MarkerId('idealsamambaia'),
-  position: LatLng(-1.3549605, -48.4200819),
-  infoWindow: InfoWindow(title: 'Ideal Samambaia'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueRed,
-  ),
-);
-Marker profMarker = Marker(
-  markerId: MarkerId('profissional'),
-  position: LatLng(-1.4241198, -48.4647034),
-  infoWindow: InfoWindow(title: 'Onde Estou'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueGreen,
   ),
 );
