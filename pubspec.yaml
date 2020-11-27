@@ -22,14 +22,14 @@ dependencies:
   url_launcher: ^5.0.3
   email_validator:
   http: ^0.12.0+2
-  rflutter_alert: ^1.0.3
+  rflutter_alert: ^1.1.0
   path_provider: ^1.1.0
   flutter_statusbarcolor: ^0.2.3
   google_fonts: ^1.1.0
   image_picker: ^0.6.3+1
   image_cropper: ^1.2.0
   edge_alert: ^0.0.1
-  connectivity: ^0.4.9+3
+  connectivity: ^2.0.2
   local_auth: ^0.6.3+2
   shared_preferences: ^0.5.12
   intl: ^0.16.1
