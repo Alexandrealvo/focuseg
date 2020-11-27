@@ -3,20 +3,23 @@ class DadosAgenda {
   String cliente;
   String endereco;
   String idProf;
-  String latlng;
+  String lat;
+  String lng;
 
   DadosAgenda(String idos, String cliente, String endereco, String idProf,
-      String latlng) {
+      String lat, String lng) {
     this.idos = idos;
     this.cliente = cliente;
     this.endereco = endereco;
     this.idProf = idProf;
-    this.latlng = latlng;
+    this.lat = lat;
+    this.lng = lng;
   }
   DadosAgenda.fromJson(Map json)
       : idos = json['idos'],
         cliente = json['cliente'],
         endereco = json['endereco'],
         idProf = json['idProf'],
-        latlng = json['latlng'];
+        lat = json['lat'],
+        lng = json['lng'];
 }

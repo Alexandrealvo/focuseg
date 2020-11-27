@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:focus/src/components/mapa_mapagenda.dart';
 import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -18,7 +19,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
   bool isLoading = true;
-
+  List agenda = List<DadosAgenda>();
   // ApiCalendario calendario_api = new ApiCalendario();
 
   @override
@@ -84,8 +85,8 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
         .get("http://focuseg.com.br/flutter/agenda_json.php?idProf=$idProf");
 
     setState(() {
-      var lista = json.decode(response.body);
-      //agenda = lista.map((model) => Dados_Agenda.fromJson(model)).toList();
+      Iterable lista = json.decode(response.body);
+      agenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
       //var jsonData = json.decode(response.body);
 
       for (var jsonElement in lista) {
@@ -329,3 +330,31 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     );
   }
 }
+
+//  _selectedEvents
+//           .map((event)
+
+// _selectedEvents
+//           .map((event) => Container(
+//                 decoration: BoxDecoration(
+//                   //border: Border.all(width: 0.8),
+//                   borderRadius: BorderRadius.circular(12.0),
+//                   color: Colors.red[900],
+//                 ),
+//                 margin:
+//                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+//                 child: ListTile(
+//                   title: Text(
+//                     event.toString(),
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                   onTap: () {
+//                     var evento = event.split('-');
+//                     var idOs = evento[0];
+//                     //var descricao = evento[1];
+
+//                     _abrir_mapa(idOs);
+//                   },
+//                 ),
+//               ))
+//           .toList(),

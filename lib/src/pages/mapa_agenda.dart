@@ -5,6 +5,14 @@ import 'package:focus/src/components/api.mapa_agenda.dart';
 import 'package:focus/src/components/mapa_mapagenda.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+
+const api = 'https://focuseg.com.br/flutter/mapa_agenda_json.php';
+
+Future<Map> getData() async {
+  http.Response response = await http.get(api);
+  return json.decode(response.body);
+}
 
 class MapaAgenda extends StatefulWidget {
   //String idOs;
@@ -114,7 +122,9 @@ class MapaAgendaState extends State<MapaAgenda> {
                 itemCount: mapa_agenda.length,
                 itemBuilder: (context, index) {
                   return _boxes(
-                      -1.350564, -48.452712, mapa_agenda[index].cliente);
+                      double.parse(mapa_agenda[index].lat),
+                      double.parse(mapa_agenda[index].lng),
+                      mapa_agenda[index].cliente);
                 })),
       ),
     );
@@ -247,19 +257,34 @@ class MapaAgendaState extends State<MapaAgenda> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition:
-              CameraPosition(target: LatLng(-1.4241198, -48.4647034), zoom: 11),
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
-          myLocationButtonEnabled: true,
-          markers: {makerCliente}),
-    );
+    return FutureBuilder<Map>(
+        future: getData(),
+        builder: (context, snapshot) {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: GoogleMap(
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(
+                  target: LatLng(-1.4241198, -48.4647034), zoom: 11),
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+              myLocationButtonEnabled: true,
+              // colocar as devidas variavel
+              markers: {
+                Marker(
+                  markerId: MarkerId('greenVille'),
+                  position: LatLng(-1.350564, -48.452712),
+                  infoWindow: InfoWindow(title: snapshot.data['lat']),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueRed,
+                  ),
+                )
+              },
+            ),
+          );
+        });
   }
 
   Future<void> _gotoLocation(double lat, double long) async {
