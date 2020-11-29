@@ -7,12 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
-const api = 'https://focuseg.com.br/flutter/mapa_agenda_json.php';
-
-Future<Map> getData() async {
-  http.Response response = await http.get(api);
-  return json.decode(response.body);
-}
+const api = 'https://focuseg.com.br/flutter/mapa_agenda_json.php?idOs=993';
 
 class MapaAgenda extends StatefulWidget {
   //String idOs;
@@ -32,11 +27,17 @@ class MapaAgendaState extends State<MapaAgenda> {
     API_MAPA_AGENDA.getMapaAgenda().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
+
         mapa_agenda =
             lista.map((model) => DadosAgenda.fromJson(model)).toList();
         isLoading = false;
       });
     });
+  }
+
+  Future<List> getData() async {
+    http.Response response = await http.get(api);
+    return json.decode(response.body);
   }
 
   @override
@@ -169,7 +170,7 @@ class MapaAgendaState extends State<MapaAgenda> {
     );
   }
 
-  Widget myDetailsContainer1(String restaurantName) {
+  Widget myDetailsContainer1(String cliente) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -177,7 +178,7 @@ class MapaAgendaState extends State<MapaAgenda> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-            restaurantName,
+            cliente,
             style: TextStyle(
                 color: Colors.red[900],
                 fontSize: 24.0,
@@ -185,105 +186,37 @@ class MapaAgendaState extends State<MapaAgenda> {
           )),
         ),
         SizedBox(height: 5.0),
-        /*Container(
-            child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStarHalf,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-                child: Text(
-              "(946)",
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 18.0,
-              ),
-            )),
-          ],
-        )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-          "American \u00B7 \u0024\u0024 \u00B7 1.6 mi",
-          style: TextStyle(
-            color: Colors.black54,
-            fontSize: 18.0,
-          ),
-        )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-          "Closed \u00B7 Opens 17:00 Thu",
-          style: TextStyle(
-              color: Colors.black54,
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold),
-        )),*/
       ],
     );
   }
 
   Widget _buildGoogleMap(BuildContext context) {
-    return FutureBuilder<Map>(
-        future: getData(),
-        builder: (context, snapshot) {
+    return ListView.builder(
+        itemCount: mapa_agenda.length,
+        itemBuilder: (context, index) {
           return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(
-                  target: LatLng(-1.4241198, -48.4647034), zoom: 11),
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-              myLocationButtonEnabled: true,
-              // colocar as devidas variavel
-              markers: {
-                Marker(
-                  markerId: MarkerId('greenVille'),
-                  position: LatLng(-1.350564, -48.452712),
-                  infoWindow: InfoWindow(title: snapshot.data['lat']),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueRed,
-                  ),
-                )
-              },
-            ),
-          );
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(-1.4241198, -48.4647034), zoom: 11),
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  myLocationButtonEnabled: true,
+                  // colocar as devidas variavel
+                  markers: {
+                    Marker(
+                        markerId: MarkerId('greenVille'),
+                        position: LatLng(double.parse(mapa_agenda[index].lat),
+                            double.parse(mapa_agenda[index].lng)),
+                        infoWindow:
+                            InfoWindow(title: mapa_agenda[index].cliente),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueRed,
+                        ))
+                  }));
         });
   }
 
@@ -298,11 +231,11 @@ class MapaAgendaState extends State<MapaAgenda> {
   }
 }
 
-Marker makerCliente = Marker(
+/*Marker makerCliente = Marker(
   markerId: MarkerId('greenVille'),
   position: LatLng(-1.350564, -48.452712),
   infoWindow: InfoWindow(title: 'nome_cliente'),
   icon: BitmapDescriptor.defaultMarkerWithHue(
     BitmapDescriptor.hueRed,
   ),
-);
+);*/

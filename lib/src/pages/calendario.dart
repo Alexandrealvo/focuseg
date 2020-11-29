@@ -83,10 +83,10 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     final String idProf = prefs.getString('idusu');
     final response = await http
         .get("http://focuseg.com.br/flutter/agenda_json.php?idProf=$idProf");
+    Iterable lista = json.decode(response.body);
+    //agenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
 
     setState(() {
-      Iterable lista = json.decode(response.body);
-      agenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
       //var jsonData = json.decode(response.body);
 
       for (var jsonElement in lista) {
@@ -314,14 +314,13 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: ListTile(
                   title: Text(
-                    event.toString(),
+                    event,
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
                     var evento = event.split('-');
                     var idOs = evento[0];
                     //var descricao = evento[1];
-
                     _abrir_mapa(idOs);
                   },
                 ),
