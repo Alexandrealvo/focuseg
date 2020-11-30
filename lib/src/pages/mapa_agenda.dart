@@ -35,11 +35,6 @@ class MapaAgendaState extends State<MapaAgenda> {
     });
   }
 
-  Future<List> getData() async {
-    http.Response response = await http.get(api);
-    return json.decode(response.body);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -55,20 +50,20 @@ class MapaAgendaState extends State<MapaAgenda> {
         title: Text("Mapa"),
         centerTitle: true,
         backgroundColor: Colors.red[900],
-        actions: <Widget>[
+        /* actions: <Widget>[
           IconButton(
               icon: Icon(FontAwesomeIcons.search),
               onPressed: () {
                 print('procurar');
               }),
-        ],
+        ],*/
       ),
       body: Stack(
         children: <Widget>[
           _buildGoogleMap(context),
           _zoomminusfunction(),
           _zoomplusfunction(),
-          _buildContainer(),
+          // _buildContainer(),
         ],
       ),
     );
@@ -110,28 +105,29 @@ class MapaAgendaState extends State<MapaAgenda> {
         target: LatLng(-1.4241198, -48.4668921), zoom: zoomVal)));
   }
 
-  Widget _buildContainer() {
+  /*Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 30),
-        height: 150,
-        width: MediaQuery.of(context).size.width * .60,
+        // margin: EdgeInsets.symmetric(vertical: 20),
+        height: 140,
+        width: MediaQuery.of(context).size.width * .50,
         child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(5.0),
             child: ListView.builder(
                 itemCount: mapa_agenda.length,
                 itemBuilder: (context, index) {
                   return _boxes(
                       double.parse(mapa_agenda[index].lat),
                       double.parse(mapa_agenda[index].lng),
-                      mapa_agenda[index].cliente);
+                      mapa_agenda[index].cliente,
+                      mapa_agenda[index].endereco);
                 })),
       ),
     );
   }
 
-  Widget _boxes(double lat, double long, String cliente) {
+  Widget _boxes(double lat, double long, String cliente, String endereco) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, long);
@@ -139,8 +135,8 @@ class MapaAgendaState extends State<MapaAgenda> {
       child: Container(
         child: new FittedBox(
           child: Material(
-              color: Colors.white,
-              elevation: 15.0,
+              color: Colors.red[900],
+              elevation: 7.0,
               borderRadius: BorderRadius.circular(10.0),
               shadowColor: Color(0x802196F3),
               child: Row(
@@ -157,12 +153,16 @@ class MapaAgendaState extends State<MapaAgenda> {
                       ),
                     ),
                   ),*/
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: myDetailsContainer1(cliente),
-                    ),
-                  ),
+
+                  Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: Text(
+                        cliente,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.bold),
+                      )),
                 ],
               )),
         ),
@@ -172,24 +172,19 @@ class MapaAgendaState extends State<MapaAgenda> {
 
   Widget myDetailsContainer1(String cliente) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Container(
-              child: Text(
-            cliente,
-            style: TextStyle(
-                color: Colors.red[900],
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
-          )),
-        ),
+        Container(
+            child: Text(
+          cliente,
+          style: TextStyle(
+              color: Colors.white, fontSize: 10.0, fontWeight: FontWeight.bold),
+        )),
         SizedBox(height: 5.0),
       ],
     );
   }
-
+*/
   Widget _buildGoogleMap(BuildContext context) {
     return ListView.builder(
         itemCount: mapa_agenda.length,
@@ -200,27 +195,31 @@ class MapaAgendaState extends State<MapaAgenda> {
               child: GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
-                      target: LatLng(-1.4241198, -48.4647034), zoom: 11),
+                      target: LatLng(double.parse(mapa_agenda[index].lat),
+                          double.parse(mapa_agenda[index].lng)),
+                      zoom: 17),
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                   },
-                  myLocationButtonEnabled: true,
+                  //myLocationButtonEnabled: true,
                   // colocar as devidas variavel
                   markers: {
                     Marker(
-                        markerId: MarkerId('greenVille'),
+                        markerId: MarkerId(mapa_agenda[index].cliente),
                         position: LatLng(double.parse(mapa_agenda[index].lat),
                             double.parse(mapa_agenda[index].lng)),
-                        infoWindow:
-                            InfoWindow(title: mapa_agenda[index].cliente),
+                        infoWindow: InfoWindow(
+                          title: mapa_agenda[index].cliente,
+                          snippet: mapa_agenda[index].endereco,
+                        ),
                         icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueRed,
+                          BitmapDescriptor.hueViolet,
                         ))
                   }));
         });
   }
 
-  Future<void> _gotoLocation(double lat, double long) async {
+  /*Future<void> _gotoLocation(double lat, double long) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(lat, long),
@@ -228,7 +227,7 @@ class MapaAgendaState extends State<MapaAgenda> {
       tilt: 50.0,
       bearing: 45.0,
     )));
-  }
+  }*/
 }
 
 /*Marker makerCliente = Marker(
@@ -238,4 +237,4 @@ class MapaAgendaState extends State<MapaAgenda> {
   icon: BitmapDescriptor.defaultMarkerWithHue(
     BitmapDescriptor.hueRed,
   ),
-);*/
+); */
