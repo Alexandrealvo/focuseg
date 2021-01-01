@@ -26,16 +26,17 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    //final _selectedDay = DateTime.now();
+    final _selectedDay = DateTime.now();
     _calendarController = CalendarController();
 
-    final _selectedDay = DateTime.now();
+    //final _selectedDay = DateTime.now();
     // calendario_api.getAll();
     // _getCalendario()
 
     getData();
 
     _selectedEvents = [];
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),

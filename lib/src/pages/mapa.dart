@@ -296,6 +296,7 @@ Marker idealbrMarker = Marker(
     BitmapDescriptor.hueRed,
   ),
 );
+
 Marker idealsamambaiaMarker = Marker(
   markerId: MarkerId('idealsamambaia'),
   position: LatLng(-1.3549605, -48.4200819),

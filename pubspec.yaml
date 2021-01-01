@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: ^0.5.12
   table_calendar: ^2.3.0
   url_launcher: ^5.0.3
+  geolocator: ^6.1.13
 
 dev_dependencies:
   flutter_test:
@@ -62,3 +63,4 @@ flutter:
     - images/tela.jpg
     - images/semregistro.png
     - images/iconmap.png
+    - images/mapa.json
