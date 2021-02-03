@@ -109,86 +109,100 @@ class _ServicosState extends State<Servicos> {
                       ? Text(tipos)
                       : Text("${dt_agenda}h\n$tipos"),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        final selectedDate = await _selectDateTime(context);
-                        if (selectedDate == null) return;
+                status == "Finalizada"
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 50,
+                          child: RaisedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10)),
+                            child: Text(
+                              "Cancelar",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 50,
+                              child: RaisedButton(
+                                onPressed: () async {
+                                  final selectedDate =
+                                      await _selectDateTime(context);
+                                  if (selectedDate == null) return;
 
-                        final selectedTime = await _selectTime(context);
-                        if (selectedTime == null) return;
+                                  final selectedTime =
+                                      await _selectTime(context);
+                                  if (selectedTime == null) return;
 
-                        setState(() {
-                          this.selectedDate = DateTime(
-                            selectedDate.year,
-                            selectedDate.month,
-                            selectedDate.day,
-                            selectedTime.hour,
-                            selectedTime.minute,
-                          );
+                                  setState(() {
+                                    this.selectedDate = DateTime(
+                                      selectedDate.year,
+                                      selectedDate.month,
+                                      selectedDate.day,
+                                      selectedTime.hour,
+                                      selectedTime.minute,
+                                    );
 
-                          Navigator.of(context).pop();
-                          showAlertDialog(
-                              context,
-                              dateFormat.format(selectedDate),
-                              '${selectedTime.hour}:${selectedTime.minute}',
-                              idServ,
-                              status,
-                              idos);
-                        });
-                      },
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10)),
-                      child: Text(
-                        status == "Pendente" ? "Agendar" : "Reagendar",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                                    Navigator.of(context).pop();
+                                    showAlertDialog(
+                                        context,
+                                        dateFormat.format(selectedDate),
+                                        '${selectedTime.hour}:${selectedTime.minute}',
+                                        idServ,
+                                        status,
+                                        idos);
+                                  });
+                                },
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(10)),
+                                child: Text(
+                                  status == "Pendente"
+                                      ? "Agendar"
+                                      : "Reagendar",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 50,
+                              child: RaisedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(10)),
+                                child: Text(
+                                  "Cancelar",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10)),
-                      child: Text(
-                        "Mapa",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10)),
-                      child: Text(
-                        "Cancelar",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                ),
               ],
             ),
           );

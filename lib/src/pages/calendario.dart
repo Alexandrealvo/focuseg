@@ -97,9 +97,9 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
               () => [],
             )
             .add(
-                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['hora_agenda']}h");
+                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['data_agenda']} ${jsonElement['hora_agenda']}h");
       }
-      //print(lista[0]['idos']);
+
       isLoading = false;
     });
   }
@@ -316,13 +316,22 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                 child: ListTile(
                   title: Text(
                     event,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.0,
+                    ),
                   ),
                   onTap: () {
                     var evento = event.split('-');
                     var idOs = evento[0];
-                    //var descricao = evento[1];
-                    _abrir_mapa(idOs);
+
+                    var now = new DateTime.now().toString().substring(0, 10);
+                    var dataagenda = event.split('|');
+                    var dtagenda = dataagenda[1].trim().substring(0, 10);
+
+                    if (dtagenda == now) {
+                      _abrir_mapa(idOs);
+                    }
                   },
                 ),
               ))
