@@ -10,6 +10,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+/*class BlocHome {
+  void initOneSignal() {
+    OneSignal.shared.init("2cffbe8e-b022-4b1a-84b2-571b54662f4b");
+    OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.none);
+  }
+}*/
 
 const urlcondo = "https://www.focuseg.com.br/flutter/login_json.php";
 
@@ -20,7 +28,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 // variaveis
-
+  //var bloc = BlocHome();
   final email = new TextEditingController();
   final senha = new TextEditingController();
   final focusNode = FocusNode();
@@ -35,6 +43,7 @@ class _LoginState extends State<Login> {
 
   @override
   void initState() {
+    // bloc.initOneSignal();
     super.initState();
     _updateStatus();
     authenticate();
@@ -76,6 +85,12 @@ class _LoginState extends State<Login> {
         final String tipo = prefs.getString('tipo');
         final String imgperfil = prefs.getString('imgperfil');
         final String email = prefs.getString('email');
+
+        OneSignal.shared.sendTags({
+          "nome": prefs.getString('nome'),
+          "idusu": prefs.getString('idusu')
+        });
+
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) =>
@@ -118,6 +133,10 @@ class _LoginState extends State<Login> {
 
     if (dados_usuario['valida'] == 1) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      OneSignal.shared.sendTags(
+          {"nome": dados_usuario['nome'], "idusu": dados_usuario['idusu']});
+
       prefs.setString('idusu', dados_usuario['idusu']);
       prefs.setString('nome', dados_usuario['nome']);
       prefs.setString('tipo', dados_usuario['tipo']);

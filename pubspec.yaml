@@ -41,6 +41,7 @@ dependencies:
   table_calendar: ^2.3.0
   url_launcher: ^5.0.3
   geolocator: ^6.1.13
+  onesignal_flutter: ^2.6.2
 
 dev_dependencies:
   flutter_test:

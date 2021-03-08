@@ -8,6 +8,7 @@ import 'package:focus/src/pages/chamadas.dart';
 import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:focus/src/pages/mapa.dart';
 import 'package:focus/src/pages/servicos.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'login.dart';
 
 void main() => runApp(MyApp());
@@ -15,6 +16,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    OneSignal.shared.init("2cffbe8e-b022-4b1a-84b2-571b54662f4b");
     return MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
