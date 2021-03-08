@@ -50,7 +50,7 @@ class _ServicosState extends State<Servicos> {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey[12],
-      title: Text("Confirma Agendamento para o dia ${data} às ${time}h?"),
+      title: Text("Confirma Agendamento para o dia $data às ${time}h?"),
       content: Text("Este agendamento será informado a administração."),
       actions: [
         cancelButton,
