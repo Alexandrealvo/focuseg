@@ -19,7 +19,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
   }
 }*/
 
-const urlcondo = "https://www.focuseg.com.br/flutter/login_json.php";
+//const urlcondo = "https://www.focuseg.com.br/flutter/login_json.php";
 
 class Login extends StatefulWidget {
   @override
@@ -124,10 +124,12 @@ class _LoginState extends State<Login> {
   }
 
   Future<List> _login() async {
-    final response = await http.post(urlcondo, body: {
-      "email": email.text,
-      "senha": senha.text,
-    });
+    final response = await http.post(
+        Uri.https("www.focuseg.com.br", '/flutter/login_json.php'),
+        body: {
+          "email": email.text,
+          "senha": senha.text,
+        });
 
     var dados_usuario = json.decode(response.body);
 

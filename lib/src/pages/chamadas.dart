@@ -5,7 +5,7 @@ import 'package:focus/src/components/api_chamadas.dart';
 import 'package:focus/src/components/mapa_chamadas.dart';
 import 'package:http/http.dart' as http;
 
-const url_aceite = "https://focuseg.com.br/flutter/aceite_chamada.php";
+//const url_aceite = "https://focuseg.com.br/flutter/aceite_chamada.php";
 
 class Chamadas extends StatefulWidget {
   @override
@@ -168,10 +168,12 @@ class _ChamadasState extends State<Chamadas> {
   }
 
   Future<List> _escolha(String id, String ctl) async {
-    final response = await http.post(url_aceite, body: {
-      "idProf": id,
-      "ctl": ctl,
-    });
+    final response = await http.post(
+        Uri.https("www.focuseg.com.br", '/flutter/aceite_chamada.php'),
+        body: {
+          "idProf": id,
+          "ctl": ctl,
+        });
 
     var dados = json.decode(response.body);
 

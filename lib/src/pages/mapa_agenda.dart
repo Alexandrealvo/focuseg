@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 
-const url_check = "https://focuseg.com.br/flutter/check.php";
+//const url_check = "https://focuseg.com.br/flutter/check.php";
 
 class MapaAgenda extends StatefulWidget {
   //String idOs;
@@ -163,7 +163,9 @@ class MapaAgendaState extends State<MapaAgenda> {
   Future<List> _check(String lat, String lng, String idOs, String ctlcheckin,
       String latcliente, String lngcliente) async {
     print("lat=$lat lng=$lng idOs=$idOs");
-    final response = await http.post(url_check, body: {
+
+    final response = await http
+        .post(Uri.https("www.focuseg.com.br", '/flutter/check.php'), body: {
       "lat": lat,
       "lng": lng,
       "idOs": idOs,

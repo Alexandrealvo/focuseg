@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
-const url = "http://www.focuseg.com.br/flutter/alterar_senha.php";
+//const url = "http://www.focuseg.com.br/flutter/alterar_senha.php";
 
 class Senha extends StatefulWidget {
   @override
@@ -25,10 +25,12 @@ class _SenhaState extends State<Senha> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idusu = prefs.getString('idusu');
 
-    final response = await http.post(url, body: {
-      "senha_nova": senha_nova.text,
-      "idusu": idusu,
-    });
+    final response = await http.post(
+        Uri.https("www.focuseg.com.br", '/flutter/alterar_senha.php'),
+        body: {
+          "senha_nova": senha_nova.text,
+          "idusu": idusu,
+        });
 
     var dados = json.decode(response.body);
 

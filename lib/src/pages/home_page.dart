@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-
+  final _picker = ImagePicker();
   static List<Widget> bottomNavigationList = <Widget>[
     HomeBottomTab(),
     Senha(),
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
 
   getImage(ImageSource source) async {
     this.setState(() {});
-    File image = await ImagePicker.pickImage(source: source);
+    PickedFile image = await _picker.getImage(source: source);
     if (image != null) {
       File cropped = await ImageCropper.cropImage(
           sourcePath: image.path,
@@ -159,13 +159,14 @@ class _HomePageState extends State<HomePage> {
           maxHeight: 400,
           compressFormat: ImageCompressFormat.jpg,
           androidUiSettings: AndroidUiSettings(
-            toolbarColor: Colors.red[900],
+            toolbarColor: Colors.deepOrange,
             toolbarTitle: "Imagem para o Perfil",
             statusBarColor: Colors.deepOrange.shade900,
             backgroundColor: Colors.white,
           ));
 
       this.setState(() {
+        _selectedFile = File(image.path);
         _selectedFile = cropped;
         if (cropped != null) {
           uploadImage();

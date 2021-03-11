@@ -7,7 +7,7 @@ import 'package:focus/src/components/mapa_servicos.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-const url_agendar = "https://focuseg.com.br/flutter/agendar_servicos.php";
+//const url_agendar = "https://focuseg.com.br/flutter/agendar_servicos.php";
 
 class Servicos extends StatefulWidget {
   @override
@@ -226,13 +226,15 @@ class _ServicosState extends State<Servicos> {
 
   Future<List> _agendar(String data, String time, String idServ, String status,
       String idos) async {
-    final response = await http.post(url_agendar, body: {
-      "idServ": idServ,
-      "data": data,
-      "time": time,
-      "status": status,
-      "idos": idos
-    });
+    final response = await http.post(
+        Uri.https("www.focuseg.com.br", '/flutter/agendar_servicos.php'),
+        body: {
+          "idServ": idServ,
+          "data": data,
+          "time": time,
+          "status": status,
+          "idos": idos
+        });
 
     var dados = json.decode(response.body);
 

@@ -7,7 +7,8 @@ class ApiCalendario {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idProf = prefs.getString('idusu');
 
-    return await http
-        .get("http://focuseg.com.br/flutter/agenda_json.php?idProf=$idProf");
+    var url = Uri.https('www.focuseg.com.br', '/flutter/mapa_agenda_json.php',
+        {'idProf': idProf});
+    return await http.get(url);
   }
 }

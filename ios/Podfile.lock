@@ -5,7 +5,7 @@ PODS:
   - Flutter (1.0.0)
   - flutter_statusbarcolor (0.0.1):
     - Flutter
-  - geolocator (6.1.9):
+  - geolocator (6.2.0):
     - Flutter
   - google_maps_flutter (0.0.1):
     - Flutter
@@ -90,13 +90,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
-  geolocator: 057a0c63a43e9c5296d8ad845a3ac8e6df23d899
+  geolocator: f5e3de65e241caba7ce3e8a618803387bda73384
   google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
   GoogleMaps: 4b5346bddfe6911bb89155d43c903020170523ac
   image_cropper: c8f9b4157933c7bb965a66d1c5e6c8fd408c6eb4
-  image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
+  image_picker: 50e7c7ff960e5f58faa4d1f4af84a771c671bc4a
   local_auth: 25938960984c3a7f6e3253e3f8d962fdd16852bd
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   OneSignal: 5f6514ec2b931306eb067acb124afbb2e49970af
@@ -105,7 +105,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
-  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
+  url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
 
 PODFILE CHECKSUM: fa8a4ffb9f4ad11e94de38b490a58e49e6bb8610
 

@@ -82,8 +82,10 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idProf = prefs.getString('idusu');
-    final response = await http
-        .get("http://focuseg.com.br/flutter/agenda_json.php?idProf=$idProf");
+
+    final response = await http.get(Uri.https(
+        'www.focuseg.com.br', '/flutter/agenda_json.php', {'idProf': idProf}));
+
     Iterable lista = json.decode(response.body);
     //agenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
 
