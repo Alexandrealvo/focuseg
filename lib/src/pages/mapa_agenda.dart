@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 //const url_check = "https://focuseg.com.br/flutter/check.php";
 
 class MapaAgenda extends StatefulWidget {
-  //String idOs;
+  // String idOs;
   //MapaAgenda({this.idOs});
 
   @override
@@ -23,8 +23,8 @@ class MapaAgenda extends StatefulWidget {
 
 class MapaAgendaState extends State<MapaAgenda> {
   Completer<GoogleMapController> _controller = Completer();
-
-  List mapa_agenda = new List<DadosAgenda>();
+  //List mapa_agenda = new List<DadosAgenda>();
+  List<DadosAgenda> mapa_agenda = <DadosAgenda>[];
   bool isLoading = true;
   final mapa_array = [];
   String nomecliente;
@@ -446,7 +446,14 @@ class MapaAgendaState extends State<MapaAgenda> {
                         double.parse(mapa_agenda[index].lng)),
                     zoom: 17),
                 onMapCreated: (GoogleMapController controller) async {
-                  _controller.complete(controller);
+                  if (!_controller.isCompleted) {
+                    //first calling is false
+                    //call "completer()"
+                    _controller.complete(controller);
+                  } else {
+                    //other calling, later is true,
+                    //don't call again complet
+                  }
                   changeMapMode();
 
                   //reposicionamento do local do usuário

@@ -20,7 +20,8 @@ class _ServicosState extends State<Servicos> {
   final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
   final DateFormat timeFormat = DateFormat('HH:mm');
 
-  var servicos = new List<Dados_Servicos>();
+  //var servicos = new List<Dados_Servicos>();
+  List<Dados_Servicos> servicos = <Dados_Servicos>[];
   bool isLoading = true;
 
   var cor_drawer = Colors.yellow[300];
@@ -39,7 +40,7 @@ class _ServicosState extends State<Servicos> {
     );
     Widget continueButton = FlatButton(
       child: Text(
-        "Continuar",
+        "Confirmar",
         style: TextStyle(fontSize: 20, color: Colors.red),
       ),
       onPressed: () {
@@ -50,8 +51,8 @@ class _ServicosState extends State<Servicos> {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey[12],
-      title: Text("Confirma Agendamento para o dia $data às ${time}h?"),
-      content: Text("Este agendamento será informado a administração."),
+      title: Text("Confirma Agendamento?"),
+      content: Text("Para: $data às ${time}h"),
       actions: [
         cancelButton,
         continueButton,

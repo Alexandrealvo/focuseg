@@ -27,7 +27,7 @@ dependencies:
   email_validator: null
   flutter_statusbarcolor: ^0.2.3
   flutter_plugin_android_lifecycle: ^2.0.0
-  font_awesome_flutter: ^8.10.0
+  font_awesome_flutter: ^9.0.0
   google_fonts: ^2.0.0
   google_maps_flutter: ^2.0.1
   http: ^0.13.0
@@ -39,11 +39,13 @@ dependencies:
   location: ^4.1.1
   path_provider: ^2.0.0
   rflutter_alert: ^1.1.0
-  shared_preferences: ^2.0.3
+  shared_preferences: ^2.0.4
   table_calendar: ^2.3.0
-  url_launcher: ^5.0.3
+  url_launcher: ^6.0.2 
   geolocator: ^7.0.1
-  onesignal_flutter: ^2.6.2
+  onesignal_flutter: ^2.6.3
+  whatsapp_unilink: ^1.0.0+1
+  
 
 dev_dependencies:
   flutter_test:

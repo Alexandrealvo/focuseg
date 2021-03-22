@@ -13,7 +13,8 @@ class Chamadas extends StatefulWidget {
 }
 
 class _ChamadasState extends State<Chamadas> {
-  var chamadas = new List<Dados_Chamadas>();
+  //var chamadas = new List<Dados_Chamadas>();
+  List<Dados_Chamadas> chamadas = <Dados_Chamadas>[];
   bool isLoading = true;
 
   _getChamadas() {

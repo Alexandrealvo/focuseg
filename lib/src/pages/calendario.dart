@@ -19,7 +19,9 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
   bool isLoading = true;
-  List agenda = List<DadosAgenda>();
+  //List agenda = List<DadosAgenda>();
+  List<DadosAgenda> agenda = <DadosAgenda>[];
+
   // ApiCalendario calendario_api = new ApiCalendario();
 
   @override
@@ -154,7 +156,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
   Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
-        //locale: 'pl_PL',
+        locale: 'pt_BR',
         calendarController: _calendarController,
         events: _events,
         //holidays: _holidays,

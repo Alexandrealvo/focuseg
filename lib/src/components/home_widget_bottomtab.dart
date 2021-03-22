@@ -95,20 +95,25 @@ class HomeBottomTab extends StatelessWidget {
                             ],
                           )),
                     ),
-                    Container(
-                        padding: const EdgeInsets.only(top: 40),
-                        color: Colors.red[900],
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.people_outline,
-                              size: 50,
-                              color: Colors.white,
-                            ),
-                            Text("Clientes",
-                                style: TextStyle(color: Colors.white)),
-                          ],
-                        )),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/clientes');
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.only(top: 40),
+                          color: Colors.red[900],
+                          child: Column(
+                            children: <Widget>[
+                              Icon(
+                                Icons.business,
+                                size: 50,
+                                color: Colors.white,
+                              ),
+                              Text("Clientes",
+                                  style: TextStyle(color: Colors.white)),
+                            ],
+                          )),
+                    ),
                     Container(
                         padding: const EdgeInsets.only(top: 40),
                         color: Colors.red[900],

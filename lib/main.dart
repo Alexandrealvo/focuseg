@@ -5,6 +5,7 @@ import 'package:focus/src/components/home_widget_bottomtab.dart';
 import 'package:focus/src/components/senha.dart';
 import 'package:focus/src/pages/calendario.dart';
 import 'package:focus/src/pages/chamadas.dart';
+import 'package:focus/src/pages/clientes.dart';
 import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:focus/src/pages/mapa.dart';
 import 'package:focus/src/pages/servicos.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
-      supportedLocales: [Locale('pt')],
+      supportedLocales: [const Locale('pt', 'BR')],
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => Login(),
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/calendario': (context) => Calendario(),
         '/mapa': (context) => Mapa(),
         '/mapa_agenda': (context) => MapaAgenda(),
+        '/clientes': (context) => Clientes(),
       },
     );
   }
