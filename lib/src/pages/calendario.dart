@@ -19,9 +19,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
   bool isLoading = true;
-  //List agenda = List<DadosAgenda>();
-  List<DadosAgenda> agenda = <DadosAgenda>[];
-
+  List agenda = List<DadosAgenda>();
   // ApiCalendario calendario_api = new ApiCalendario();
 
   @override
@@ -92,8 +90,6 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     //agenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
 
     setState(() {
-      //var jsonData = json.decode(response.body);
-
       for (var jsonElement in lista) {
         _events
             .putIfAbsent(
@@ -308,39 +304,38 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
   Widget _buildEventList() {
     return ListView(
-      children: _selectedEvents
-          .map((event) => Container(
-                decoration: BoxDecoration(
-                  //border: Border.all(width: 0.8),
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.red[900],
-                ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: ListTile(
-                  title: Text(
-                    event,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13.0,
-                    ),
+        children: _selectedEvents
+            .map((event) => Container(
+                  decoration: BoxDecoration(
+                    //border: Border.all(width: 0.8),
+                    borderRadius: BorderRadius.circular(12.0),
+                    color: Colors.red[900],
                   ),
-                  onTap: () {
-                    var evento = event.split('-');
-                    var idOs = evento[0];
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 4.0),
+                  child: ListTile(
+                    title: Text(
+                      event,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13.0,
+                      ),
+                    ),
+                    onTap: () {
+                      var evento = event.split('-');
+                      var idOs = evento[0];
 
-                    var now = new DateTime.now().toString().substring(0, 10);
-                    var dataagenda = event.split('|');
-                    var dtagenda = dataagenda[1].trim().substring(0, 10);
+                      var now = new DateTime.now().toString().substring(0, 10);
+                      var dataagenda = event.split('|');
+                      var dtagenda = dataagenda[1].trim().substring(0, 10);
 
-                    if (dtagenda == now) {
-                      _abrir_mapa(idOs);
-                    }
-                  },
-                ),
-              ))
-          .toList(),
-    );
+                      if (dtagenda == now) {
+                        _abrir_mapa(idOs);
+                      }
+                    },
+                  ),
+                ))
+            .toList());
   }
 }
 
