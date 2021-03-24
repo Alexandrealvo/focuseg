@@ -62,7 +62,16 @@ class _ClientesState extends State<Clientes> {
     }
   }
 
-  Future<void> _launchInWebViewWithJavaScript(String url) async {
+  Future<void> _launchInWebViewWithJavaScript(String cel) async {
+    var celular = cel
+        .replaceAll("(", "")
+        .replaceAll(")", "")
+        .replaceAll("-", "")
+        .replaceAll(" ", "")
+        .replaceAll("+", "");
+
+    var url = "https://api.whatsapp.com/send?phone=55${celular}_blank";
+
     if (await canLaunch(url)) {
       await launch(
         url,
@@ -71,7 +80,12 @@ class _ClientesState extends State<Clientes> {
         enableJavaScript: true,
       );
     } else {
-      throw 'Could not launch $url';
+      EdgeAlert.show(context,
+          title:
+              'Erro! Não foi possível enviar mensagem para este celular $cel.',
+          gravity: EdgeAlert.BOTTOM,
+          backgroundColor: Colors.red,
+          icon: Icons.highlight_off);
     }
   }
 
@@ -152,8 +166,11 @@ class _ClientesState extends State<Clientes> {
                     Icons.arrow_right,
                     color: Colors.blueGrey,
                   ),
-                  onTap: () => _launchInWebViewWithJavaScript(
-                      "https://api.whatsapp.com/send?phone=5591981220670_blank"),
+                  onTap: () => cel == ""
+                      ? _alertatelvazio()
+                      : setState(() {
+                          _launchInWebViewWithJavaScript(cel);
+                        }),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:focus/src/components/home_widget_bottomtab.dart';
 import 'package:focus/src/components/senha.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../login.dart';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
@@ -172,6 +173,24 @@ class _HomePageState extends State<HomePage> {
           uploadImage();
         }
       });
+    }
+  }
+
+  Future<void> _launchInWebViewWithJavaScript() async {
+    const url = "https://api.whatsapp.com/send?phone=5591981220670_blank";
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
+    } else {
+      EdgeAlert.show(context,
+          title: 'Erro! Não foi possível mandar mensagem via Whatsapp.',
+          gravity: EdgeAlert.BOTTOM,
+          backgroundColor: Colors.red,
+          icon: Icons.highlight_off);
     }
   }
 
@@ -359,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                           size: 25,
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/ajuda');
+                          _launchInWebViewWithJavaScript();
                         },
                       ),
                     ),

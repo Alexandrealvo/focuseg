@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_chamadas.dart';
 import 'package:focus/src/components/mapa_chamadas.dart';
 import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 //const url_aceite = "https://focuseg.com.br/flutter/aceite_chamada.php";
 
@@ -16,6 +17,18 @@ class _ChamadasState extends State<Chamadas> {
   //var chamadas = new List<Dados_Chamadas>();
   List<Dados_Chamadas> chamadas = <Dados_Chamadas>[];
   bool isLoading = true;
+
+  var alertStyle = AlertStyle(
+    animationType: AnimationType.fromTop,
+    isCloseButton: false,
+    isOverlayTapDismiss: false,
+    //descStyle: TextStyle(color: Colors.red,),
+    animationDuration: Duration(milliseconds: 300),
+    titleStyle: TextStyle(
+      color: Colors.black,
+      fontSize: 18,
+    ),
+  );
 
   _getChamadas() {
     API.getChamadas().then((response) {
@@ -32,7 +45,7 @@ class _ChamadasState extends State<Chamadas> {
     _getChamadas();
   }
 
-  showAlertDialog(BuildContext context, String idProf) {
+  showAlertDialog(BuildContext context, String idProf, String idos) {
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text(
@@ -49,7 +62,7 @@ class _ChamadasState extends State<Chamadas> {
         style: TextStyle(fontSize: 20, color: Colors.red),
       ),
       onPressed: () {
-        _escolha(idProf, '3');
+        _escolha(idProf, '3', idos);
       },
     );
     // set up the AlertDialog
@@ -72,7 +85,7 @@ class _ChamadasState extends State<Chamadas> {
   }
 
   void _configurandoModalBottomSheet(context, String nome_cliente,
-      String endereco, String tipos, String idProf) {
+      String endereco, String tipos, String idProf, String idos) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
@@ -111,7 +124,7 @@ class _ChamadasState extends State<Chamadas> {
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
-                        _escolha(idProf, '2');
+                        _escolha(idProf, '2', idos);
                       },
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10)),
@@ -131,7 +144,7 @@ class _ChamadasState extends State<Chamadas> {
                     child: RaisedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        showAlertDialog(context, idProf);
+                        showAlertDialog(context, idProf, idos);
                       },
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10)),
@@ -168,13 +181,10 @@ class _ChamadasState extends State<Chamadas> {
         });
   }
 
-  Future<List> _escolha(String id, String ctl) async {
+  Future<void> _escolha(String id, String ctl, String idos) async {
     final response = await http.post(
         Uri.https("www.focuseg.com.br", '/flutter/aceite_chamada.php'),
-        body: {
-          "idProf": id,
-          "ctl": ctl,
-        });
+        body: {"idProf": id, "ctl": ctl, "idos": idos});
 
     var dados = json.decode(response.body);
 
@@ -186,15 +196,36 @@ class _ChamadasState extends State<Chamadas> {
       if (ctl == '2') {
         Navigator.pushNamed(context, '/servicos');
       } else {
-        Navigator.of(context).pop();
+        setState(() {
+          _getChamadas();
+        });
       }
     } else {
       Navigator.of(context).pop();
-      EdgeAlert.show(context,
-          title: 'Erro! Tente novamente.',
-          gravity: EdgeAlert.BOTTOM,
-          backgroundColor: Colors.red,
-          icon: Icons.highlight_off);
+      Alert(
+        image: Icon(
+          Icons.highlight_off,
+          color: Colors.red,
+          size: 60,
+        ),
+        style: alertStyle,
+        context: context,
+        title: "Houve Algum Erro!\n Tente novamente.",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "OK",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 80,
+            color: Colors.red,
+          )
+        ],
+      ).show();
     }
   }
 
@@ -285,7 +316,8 @@ class _ChamadasState extends State<Chamadas> {
                         chamadas[index].nome_cliente,
                         chamadas[index].endereco,
                         chamadas[index].tipos,
-                        chamadas[index].idProf);
+                        chamadas[index].idProf,
+                        chamadas[index].idos);
                   },
                   selected: true,
                   leading:

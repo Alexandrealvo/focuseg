@@ -160,6 +160,22 @@ class MapaAgendaState extends State<MapaAgenda> {
     });
   }
 
+  Future _alterargps(String idOs, String lat, String lng) async {
+    print("lat=$lat lng=$lng idOs=$idOs");
+    final response = await http.post(
+        Uri.https("www.focuseg.com.br", '/flutter/alterargps.php'),
+        body: {"lat": lat, "lng": lng, "idOs": idOs});
+
+    var dados = json.decode(response.body);
+
+    if (dados['valida'] == 1) {
+      print("Sucesso! ${dados['valida']}");
+      return false;
+    } else {
+      print("IXI! ${dados['valida']}");
+    }
+  }
+
   Future<List> _check(String lat, String lng, String idOs, String ctlcheckin,
       String latcliente, String lngcliente) async {
     print("lat=$lat lng=$lng idOs=$idOs");
@@ -175,8 +191,6 @@ class MapaAgendaState extends State<MapaAgenda> {
     });
 
     var dados = json.decode(response.body);
-
-    print("valida=> ${dados['valida']}");
 
     if (dados['valida'] == 1 && ctlcheckin != "1") {
       EdgeAlert.show(context,
@@ -252,19 +266,25 @@ class MapaAgendaState extends State<MapaAgenda> {
                                 child: Container(
                                     width: MediaQuery.of(context).size.width,
                                     height: 50,
-                                    child: RaisedButton(
+                                    child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(10)),
                                       child: Text(
                                         "Observação",
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18),
                                       ),
-                                      color: Colors.blue[400],
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.white,
+                                        backgroundColor: Colors.indigo.shade900,
+                                        onSurface: Colors.black12,
+                                        shadowColor: Colors.black,
+                                        elevation: 5,
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                      ),
                                     )),
                               ),
                               Padding(
@@ -272,23 +292,56 @@ class MapaAgendaState extends State<MapaAgenda> {
                                 child: Container(
                                   width: MediaQuery.of(context).size.width,
                                   height: 50,
-                                  child: RaisedButton(
+                                  child: TextButton(
                                     onPressed: () {
                                       _pendente(mapa_agenda[index].idos);
                                       Navigator.of(context).pop();
                                     },
-                                    shape: new RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(10)),
                                     child: Text(
                                       "Alterar Pendente",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 18),
                                     ),
-                                    color: Colors.amber,
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.amber[800],
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
                                   ),
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      "Voltar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.blueGrey,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           )
                         : Wrap(
@@ -308,98 +361,148 @@ class MapaAgendaState extends State<MapaAgenda> {
                                 subtitle: Text(mapa_agenda[index].endereco),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 50,
-                                    child: mapa_agenda[index].ctlcheckin == "1"
-                                        ? RaisedButton(
-                                            onPressed: () {
-                                              _check(
-                                                  latlng.latitude.toString(),
-                                                  latlng.longitude.toString(),
-                                                  mapa_agenda[index].idos,
-                                                  mapa_agenda[index].ctlcheckin,
-                                                  mapa_agenda[index].lat,
-                                                  mapa_agenda[index].lng);
-                                              Navigator.of(context).pop();
-                                            },
-                                            shape: new RoundedRectangleBorder(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: mapa_agenda[index].ctlcheckin ==
+                                              "1"
+                                          ? TextButton(
+                                              onPressed: () {
+                                                _check(
+                                                    latlng.latitude.toString(),
+                                                    latlng.longitude.toString(),
+                                                    mapa_agenda[index].idos,
+                                                    mapa_agenda[index]
+                                                        .ctlcheckin,
+                                                    mapa_agenda[index].lat,
+                                                    mapa_agenda[index].lng);
+                                                Navigator.of(context).pop();
+                                              },
+                                              /*shape: new RoundedRectangleBorder(
                                                 borderRadius:
                                                     new BorderRadius.circular(
-                                                        10)),
-                                            child: Text(
-                                              "Check-out",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18),
-                                            ),
-                                            color: Colors.red[400],
-                                          )
-                                        : RaisedButton(
-                                            onPressed: () {
-                                              _check(
-                                                  latlng.latitude.toString(),
-                                                  latlng.longitude.toString(),
-                                                  mapa_agenda[index].idos,
-                                                  mapa_agenda[index].ctlcheckin,
-                                                  mapa_agenda[index].lat,
-                                                  mapa_agenda[index].lng);
-                                              Navigator.of(context).pop();
-                                            },
-                                            shape: new RoundedRectangleBorder(
-                                                borderRadius:
-                                                    new BorderRadius.circular(
-                                                        10)),
-                                            child: Text(
-                                              "Check-in",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18),
-                                            ),
-                                            color: Colors.blueAccent,
-                                          )),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50,
-                                  child: RaisedButton(
-                                    onPressed: () {},
-                                    shape: new RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(10)),
-                                    child: Text(
-                                      "Atualizar Local",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
+                                                        10)),*/
+                                              child: Text(
+                                                "Check-out",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                primary: Colors.white,
+                                                backgroundColor:
+                                                    Colors.red[400],
+                                                onSurface: Colors.black12,
+                                                shadowColor: Colors.black,
+                                                elevation: 5,
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    10))),
+                                              ),
+                                            )
+                                          : TextButton(
+                                              onPressed: () {
+                                                _check(
+                                                    latlng.latitude.toString(),
+                                                    latlng.longitude.toString(),
+                                                    mapa_agenda[index].idos,
+                                                    mapa_agenda[index]
+                                                        .ctlcheckin,
+                                                    mapa_agenda[index].lat,
+                                                    mapa_agenda[index].lng);
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text(
+                                                "Check-in",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                primary: Colors.white,
+                                                backgroundColor:
+                                                    Colors.red[400],
+                                                onSurface: Colors.black12,
+                                                shadowColor: Colors.black,
+                                                elevation: 5,
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    10))),
+                                              ),
+                                            ))),
+                              mapa_agenda[index].ctlcheckin == "0"
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height: 50,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+
+                                            _alterargps(
+                                                mapa_agenda[index].idos,
+                                                latlng.latitude.toString(),
+                                                latlng.longitude.toString());
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            "Alterar GPS",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            primary: Colors.white,
+                                            backgroundColor: Colors.green[900],
+                                            onSurface: Colors.black12,
+                                            shadowColor: Colors.black,
+                                            elevation: 5,
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.all(0),
                                     ),
-                                    color: Colors.purple[300],
-                                  ),
-                                ),
-                              ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width,
                                   height: 50,
-                                  child: RaisedButton(
+                                  child: TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    shape: new RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(10)),
                                     child: Text(
                                       "Voltar",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 18),
                                     ),
-                                    color: Colors.blueGrey,
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.blueGrey,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                   );

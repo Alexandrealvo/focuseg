@@ -4,8 +4,13 @@ import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_servicos.dart';
 import 'package:focus/src/components/mapa_servicos.dart';
+import 'package:focus/src/pages/calendario.dart';
+import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'mapa_agenda.dart';
 
 //const url_agendar = "https://focuseg.com.br/flutter/agendar_servicos.php";
 
@@ -65,6 +70,12 @@ class _ServicosState extends State<Servicos> {
         return alert;
       },
     );
+  }
+
+  void _abrir_agenda() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Calendario();
+    }));
   }
 
   void _configurandoModalBottomSheet(
@@ -131,98 +142,206 @@ class _ServicosState extends State<Servicos> {
                           ),
                         ),
                       )
-                    : Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 50,
-                              child: RaisedButton(
-                                onPressed: () async {
-                                  final selectedDate =
-                                      await _selectDateTime(context);
-                                  if (selectedDate == null) return;
+                    : status == "Aceito Pendente" ||
+                            status == "Retorno Pendente"
+                        ? Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () async {
+                                      final selectedDate =
+                                          await _selectDateTime(context);
+                                      if (selectedDate == null) return;
 
-                                  final selectedTime =
-                                      await _selectTime(context);
-                                  if (selectedTime == null) return;
+                                      final selectedTime =
+                                          await _selectTime(context);
+                                      if (selectedTime == null) return;
 
-                                  setState(() {
-                                    this.selectedDate = DateTime(
-                                      selectedDate.year,
-                                      selectedDate.month,
-                                      selectedDate.day,
-                                      selectedTime.hour,
-                                      selectedTime.minute,
-                                    );
+                                      setState(() {
+                                        this.selectedDate = DateTime(
+                                          selectedDate.year,
+                                          selectedDate.month,
+                                          selectedDate.day,
+                                          selectedTime.hour,
+                                          selectedTime.minute,
+                                        );
 
-                                    Navigator.of(context).pop();
-                                    showAlertDialog(
-                                        context,
-                                        dateFormat.format(selectedDate),
-                                        '${selectedTime.hour}:${selectedTime.minute}',
-                                        idServ,
-                                        status,
-                                        idos);
-                                  });
-                                },
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(10)),
-                                child: Text(
-                                  status == "Pendente"
-                                      ? "Agendar"
-                                      : "Reagendar",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
+                                        Navigator.of(context).pop();
+                                        showAlertDialog(
+                                            context,
+                                            dateFormat.format(selectedDate),
+                                            '${selectedTime.hour}:${selectedTime.minute}',
+                                            idServ,
+                                            status,
+                                            idos);
+                                      });
+                                    },
+                                    child: Text(
+                                      "Agendar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.green,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
                                 ),
-                                color: Colors.green,
                               ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 50,
-                              child: RaisedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(10)),
-                                child: Text(
-                                  "Cancelar",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      "Cancelar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.blueGrey,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
                                 ),
-                                color: Colors.blueGrey,
-                              ),
-                            ),
+                              )
+                            ],
                           )
-                        ],
-                      ),
+                        : Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () async {
+                                      final selectedDate =
+                                          await _selectDateTime(context);
+                                      if (selectedDate == null) return;
+
+                                      final selectedTime =
+                                          await _selectTime(context);
+                                      if (selectedTime == null) return;
+
+                                      setState(() {
+                                        this.selectedDate = DateTime(
+                                          selectedDate.year,
+                                          selectedDate.month,
+                                          selectedDate.day,
+                                          selectedTime.hour,
+                                          selectedTime.minute,
+                                        );
+
+                                        Navigator.of(context).pop();
+                                        showAlertDialog(
+                                            context,
+                                            dateFormat.format(selectedDate),
+                                            '${selectedTime.hour}:${selectedTime.minute}',
+                                            idServ,
+                                            status,
+                                            idos);
+                                      });
+                                    },
+                                    child: Text(
+                                      "Reagendar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.green,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      _abrir_agenda();
+                                    },
+                                    child: Text(
+                                      "Agenda",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.red[400],
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 50,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      "Cancelar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.blueGrey,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
               ],
             ),
           );
         });
-  }
-
-  _getServicos() {
-    API_SERV.getServicos().then((response) {
-      setState(() {
-        Iterable lista = json.decode(response.body);
-        servicos =
-            lista.map((model) => Dados_Servicos.fromJson(model)).toList();
-        isLoading = false;
-      });
-    });
-  }
-
-  _ServicosState() {
-    _getServicos();
   }
 
   Future<List> _agendar(String data, String time, String idServ, String status,
@@ -251,6 +370,23 @@ class _ServicosState extends State<Servicos> {
           backgroundColor: Colors.red,
           icon: Icons.highlight_off);
     }
+  }
+
+  _getServicos() {
+    API_SERV.getServicos().then((response) {
+      setState(() {
+        Iterable lista = json.decode(response.body);
+        servicos =
+            lista.map((model) => Dados_Servicos.fromJson(model)).toList();
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getServicos();
   }
 
   @override
@@ -331,18 +467,21 @@ class _ServicosState extends State<Servicos> {
             itemCount: servicos.length,
             itemBuilder: (context, index) {
               return Card(
-                color: servicos[index].status == 'Pendente'
+                color: servicos[index].status == 'Pendente Aceite'
                     ? Colors.yellow
-                    : servicos[index].status == 'Agendado'
-                        ? Colors.blue[200]
-                        : servicos[index].status == 'Em visita'
-                            ? Colors.red[100]
-                            : servicos[index].status == 'Visitado | Pendente'
-                                ? Colors.amber
+                    : servicos[index].status == 'Aceito Pendente'
+                        ? Colors.yellow[400]
+                        : servicos[index].status == 'Agendado'
+                            ? Colors.blue[100]
+                            : servicos[index].status == 'Em visita'
+                                ? Colors.deepOrange[300]
                                 : servicos[index].status ==
-                                        'Agendado | Re-visita'
-                                    ? Colors.blue
-                                    : Colors.green,
+                                        'Visitado | Pendente'
+                                    ? Colors.amber
+                                    : servicos[index].status ==
+                                            'Agendado | Re-visita'
+                                        ? Colors.blue
+                                        : Colors.green,
                 margin: EdgeInsets.all(8),
                 child: ListTile(
                   onTap: () {
