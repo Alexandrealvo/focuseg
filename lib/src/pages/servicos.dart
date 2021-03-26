@@ -5,14 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_servicos.dart';
 import 'package:focus/src/components/mapa_servicos.dart';
 import 'package:focus/src/pages/calendario.dart';
-import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'mapa_agenda.dart';
-
-//const url_agendar = "https://focuseg.com.br/flutter/agendar_servicos.php";
 
 class Servicos extends StatefulWidget {
   @override
@@ -497,8 +491,8 @@ class _ServicosState extends State<Servicos> {
                       servicos[index].dt_agenda,
                     );
                   },
-                  leading:
-                      Icon(Icons.notifications_active, color: Colors.red[900]),
+                  leading: Icon(Icons.build_circle_outlined,
+                      size: 32, color: Colors.red[900]),
                   title: Text(servicos[index].nome_cliente,
                       style: TextStyle(fontSize: 18, color: Colors.black54)),
                   trailing: Text("OS " + servicos[index].idos,

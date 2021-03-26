@@ -6,6 +6,7 @@ import 'package:focus/src/components/senha.dart';
 import 'package:focus/src/pages/calendario.dart';
 import 'package:focus/src/pages/chamadas.dart';
 import 'package:focus/src/pages/clientes.dart';
+import 'package:focus/src/pages/info_servicos.dart';
 import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:focus/src/pages/mapa.dart';
 import 'package:focus/src/pages/servicos.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     OneSignal.shared.init("2cffbe8e-b022-4b1a-84b2-571b54662f4b");
+
     return MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/mapa': (context) => Mapa(),
         '/mapa_agenda': (context) => MapaAgenda(),
         '/clientes': (context) => Clientes(),
+        '/infoservicos': (context) => Info_Servicos(),
       },
     );
   }

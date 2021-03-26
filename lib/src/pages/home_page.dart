@@ -155,9 +155,9 @@ class _HomePageState extends State<HomePage> {
       File cropped = await ImageCropper.cropImage(
           sourcePath: image.path,
           aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-          compressQuality: 80,
-          maxWidth: 400,
-          maxHeight: 400,
+          compressQuality: 50,
+          maxWidth: 200,
+          maxHeight: 200,
           compressFormat: ImageCompressFormat.jpg,
           androidUiSettings: AndroidUiSettings(
             toolbarColor: Colors.deepOrange,

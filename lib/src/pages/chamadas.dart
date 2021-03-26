@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_chamadas.dart';
 import 'package:focus/src/components/mapa_chamadas.dart';

@@ -6,8 +6,6 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
-//const url = "http://www.focuseg.com.br/flutter/alterar_senha.php";
-
 class Senha extends StatefulWidget {
   @override
   _SenhaState createState() => _SenhaState();

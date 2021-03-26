@@ -160,26 +160,72 @@ class MapaAgendaState extends State<MapaAgenda> {
     });
   }
 
-  Future _alterargps(String idOs, String lat, String lng) async {
-    print("lat=$lat lng=$lng idOs=$idOs");
+  showAlertDialog(String idOs, String lat, String lng) {
+    Widget cancelButton = FlatButton(
+      child: Text(
+        "Cancelar",
+        style: TextStyle(fontSize: 20),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text(
+        "Alterar",
+        style: TextStyle(fontSize: 20, color: Colors.red),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+        _alterargps(idOs, lat, lng);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.blueGrey[12],
+      content: Text("Alertamos que este procedimento será definitivo."),
+      title: Text("Deseja Mesmo Alterar GPS do Cliente?"),
+      // content: Text("subtitulo"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> _alterargps(String idOs, String lat, String lng) async {
     final response = await http.post(
         Uri.https("www.focuseg.com.br", '/flutter/alterargps.php'),
         body: {"lat": lat, "lng": lng, "idOs": idOs});
 
     var dados = json.decode(response.body);
 
+    print('teste de alteracao');
+
     if (dados['valida'] == 1) {
-      print("Sucesso! ${dados['valida']}");
-      return false;
+      EdgeAlert.show(context,
+          title: 'GPS Alterado com Sucesso!',
+          gravity: EdgeAlert.BOTTOM,
+          backgroundColor: Colors.green,
+          icon: Icons.check);
     } else {
-      print("IXI! ${dados['valida']}");
+      EdgeAlert.show(context,
+          title: 'Houve Algum Problema! Tente Novamente',
+          gravity: EdgeAlert.BOTTOM,
+          backgroundColor: Colors.red,
+          icon: Icons.highlight_off);
     }
   }
 
-  Future<List> _check(String lat, String lng, String idOs, String ctlcheckin,
+  Future<void> _check(String lat, String lng, String idOs, String ctlcheckin,
       String latcliente, String lngcliente) async {
-    print("lat=$lat lng=$lng idOs=$idOs");
-
     final response = await http
         .post(Uri.https("www.focuseg.com.br", '/flutter/check.php'), body: {
       "lat": lat,
@@ -380,9 +426,9 @@ class MapaAgendaState extends State<MapaAgenda> {
                                                 Navigator.of(context).pop();
                                               },
                                               /*shape: new RoundedRectangleBorder(
-                                                borderRadius:
-                                                    new BorderRadius.circular(
-                                                        10)),*/
+                                                      borderRadius:
+                                                          new BorderRadius.circular(
+                                                              10)),*/
                                               child: Text(
                                                 "Check-out",
                                                 style: TextStyle(
@@ -447,12 +493,10 @@ class MapaAgendaState extends State<MapaAgenda> {
                                         child: TextButton(
                                           onPressed: () {
                                             Navigator.of(context).pop();
-
-                                            _alterargps(
+                                            showAlertDialog(
                                                 mapa_agenda[index].idos,
                                                 latlng.latitude.toString(),
                                                 latlng.longitude.toString());
-                                            Navigator.of(context).pop();
                                           },
                                           child: Text(
                                             "Alterar GPS",

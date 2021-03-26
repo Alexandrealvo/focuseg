@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/mapa_mapagenda.dart';
+import 'package:focus/src/pages/info_servicos.dart';
 import 'package:focus/src/pages/mapa_agenda.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -97,7 +98,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
               () => [],
             )
             .add(
-                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['data_agenda']} ${jsonElement['hora_agenda']}h");
+                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['data_agenda']} = ${jsonElement['status']}");
       }
 
       isLoading = false;
@@ -110,6 +111,15 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MapaAgenda();
+    }));
+  }
+
+  void _abrir_page_info(idOs) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('idOs', idOs);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Info_Servicos();
     }));
   }
 
@@ -309,13 +319,27 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     //border: Border.all(width: 0.8),
                     borderRadius: BorderRadius.circular(12.0),
-                    color: Colors.red[900],
+                    color: event.split('=')[1].trim() == 'Pendente Aceite'
+                        ? Colors.yellow
+                        : event.split('=')[1].trim() == 'Aceito Pendente'
+                            ? Colors.yellow[400]
+                            : event.split('=')[1].trim() == 'Agendado'
+                                ? Colors.blue[100]
+                                : event.split('=')[1].trim() == 'Em visita'
+                                    ? Colors.deepOrange[300]
+                                    : event.split('=')[1].trim() ==
+                                            'Visitado | Pendente'
+                                        ? Colors.amber
+                                        : event.split('=')[1].trim() ==
+                                                'Agendado | Re-visita'
+                                            ? Colors.blue
+                                            : Colors.green,
                   ),
                   margin: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
                     title: Text(
-                      event,
+                      event.split('-')[1].split('|')[0],
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13.0,
@@ -331,6 +355,8 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
 
                       if (dtagenda == now) {
                         _abrir_mapa(idOs);
+                      } else {
+                        _abrir_page_info(idOs);
                       }
                     },
                   ),
