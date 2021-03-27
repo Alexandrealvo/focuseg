@@ -75,11 +75,9 @@ class _Info_ServicosState extends State<Info_Servicos> {
 
     if (response.statusCode == 200) {
       Navigator.of(context).pop();
-      EdgeAlert.show(context,
-          title: 'Imagem incluída',
-          gravity: EdgeAlert.BOTTOM,
-          backgroundColor: Colors.green,
-          icon: Icons.check);
+      setState(() {
+        _getInfoServ();
+      });
     } else {
       Navigator.of(context).pop();
       EdgeAlert.show(context,
@@ -240,229 +238,245 @@ class _Info_ServicosState extends State<Info_Servicos> {
             child: ListView.builder(
                 itemCount: info.length,
                 itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(10, 30, 0, 0),
-                              child: Icon(
-                                Icons.business,
-                                color: Colors.red[400],
-                              )),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(20, 30, 0, 0),
-                            child: Text(info[index].nome_cliente,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(
+                            Icons.business,
+                            color: Colors.red[400],
+                            size: 24,
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-                              child: Icon(
-                                Icons.arrow_right,
-                                color: Colors.red[400],
-                                size: 32,
-                              )),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-                            child: Text('${info[index].checkin}h',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white)),
+                          title: Text(
+                            '${info[index].nome_cliente}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
-                        ],
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.arrow_left,
-                          color: Colors.red[400],
-                          size: 32,
                         ),
-                        title: Text(
-                          '${info[index].checkout}h',
-                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ListTile(
+                          leading: Icon(
+                            Icons.arrow_left,
+                            color: Colors.red[400],
+                            size: 32,
+                          ),
+                          title: Text(
+                            '${info[index].checkin}h',
+                            style: TextStyle(fontSize: 12, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      info[index].obs != ""
-                          ? ListTile(
-                              leading: Icon(
-                                Icons.info_outline,
-                                color: Colors.red[400],
-                                size: 24,
-                              ),
-                              title: Text(
-                                '${info[index].obs}',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white),
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  size: 22,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    boxText = !boxText;
-                                  });
-                                },
-                              ),
-                            )
-                          : Container(),
-                      info[index].imgserv != ""
-                          ? Padding(
-                              padding: const EdgeInsets.fromLTRB(50, 30, 0, 0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                180, 0, 0, 0),
-                                            child: Center(
-                                              child: Icon(
-                                                Icons.edit,
-                                                size: 22,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.red[900],
-                                            )),
-                                      ],
-                                    ),
-                                    width: 200,
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.rectangle,
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                              'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
-                                        )),
+                        ListTile(
+                          leading: Icon(
+                            Icons.arrow_left,
+                            color: Colors.red[400],
+                            size: 32,
+                          ),
+                          title: Text(
+                            '${info[index].checkout}h',
+                            style: TextStyle(fontSize: 12, color: Colors.white),
+                          ),
+                        ),
+                        info[index].obs != ""
+                            ? Card(
+                                color: Colors.grey.withOpacity(.2),
+                                child: ListTile(
+                                  leading: Icon(
+                                    Icons.info_outline,
+                                    color: Colors.red[400],
+                                    size: 24,
                                   ),
-                                ],
-                              ),
-                            )
-                          : Container(),
-                      Form(
-                        //autovalidate: true,
-                        key: _formulario,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                              child: Container(
-                                //color: Color(0xfff5f5f5),
-                                child: info[index].obs == "" || boxText == true
-                                    ? TextFormField(
-                                        controller: obs,
-                                        maxLines: 4,
-                                        maxLength: 1000,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'SFUIDisplay'),
-                                        decoration: InputDecoration(
-                                            counterStyle:
-                                                TextStyle(color: Colors.white),
-                                            border: OutlineInputBorder(),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
+                                  title: Text(
+                                    '${info[index].obs}',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.white),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      size: 22,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        boxText = !boxText;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        info[index].imgserv != ""
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(100, 20, 0, 10),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        _configurandoModalBottomSheet(context);
+                                      },
+                                      child: Container(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                                margin: EdgeInsets.fromLTRB(
+                                                    200, 0, 0, 0),
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.edit,
+                                                    size: 24,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
                                                   color: Colors.red[900],
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                borderSide: BorderSide(
-                                                    color: Colors.white)),
-                                            labelText: 'Entre com a observação',
-                                            //prefixIcon:
-                                            // Icon(Icons.mail_outline, color: Colors.white),
-                                            labelStyle: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16)),
-                                      )
-                                    : Container(),
-                              ),
-                            ),
-                            info[index].obs == "" || boxText == true
-                                ? Padding(
-                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                    child: ButtonTheme(
-                                      height: 50.0,
-                                      child: TextButton(
-                                        onPressed: () {
-                                          obs.text == ''
-                                              ? Text(
-                                                  'Campo Vazio',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                )
-                                              : setState(() {
-                                                  isLoading = true;
-                                                  _enviar();
-                                                });
-                                        },
-                                        child: Text(
-                                          "Enviar",
+                                                )),
+                                          ],
+                                        ),
+                                        width: 220,
+                                        height: 220,
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.white
+                                                    .withOpacity(0.2),
+                                                blurRadius:
+                                                    3.0, // soften the shadow
+                                                spreadRadius:
+                                                    1.0, //extend the shadow
+                                                offset: Offset(
+                                                  5.0, // Move to right 10  horizontally
+                                                  5.0, // Move to bottom 10 Vertically
+                                                ),
+                                              )
+                                            ],
+                                            shape: BoxShape.rectangle,
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                  'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
+                                            )),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(), //
+                        Form(
+                          //autovalidate: true,
+                          key: _formulario,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                                child: Container(
+                                  //color: Color(0xfff5f5f5),
+                                  child: info[index].obs == "" ||
+                                          boxText == true
+                                      ? TextFormField(
+                                          controller: obs,
+                                          maxLines: 3,
+                                          maxLength: 500,
                                           style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                          backgroundColor: Colors.red[900],
-                                          onSurface: Colors.white,
-                                          shadowColor: Colors.grey[500],
-                                          elevation: 5,
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
+                                              fontFamily: 'SFUIDisplay'),
+                                          decoration: InputDecoration(
+                                              counterStyle: TextStyle(
+                                                  color: Colors.white),
+                                              border: OutlineInputBorder(),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.red[900],
+                                                    width: 3.0),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white)),
+                                              labelText:
+                                                  'Entre com a observação',
+                                              //prefixIcon:
+                                              // Icon(Icons.mail_outline, color: Colors.white),
+                                              labelStyle: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16)),
+                                        )
+                                      : Container(),
+                                ),
+                              ),
+                              info[index].obs == "" || boxText == true
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: ButtonTheme(
+                                        height: 50.0,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            obs.text == ''
+                                                ? Text(
+                                                    'Campo Vazio',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )
+                                                : setState(() {
+                                                    isLoading = true;
+                                                    _enviar();
+                                                  });
+                                          },
+                                          child: Text(
+                                            "Enviar",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            primary: Colors.white,
+                                            backgroundColor: Colors.red[900],
+                                            onSurface: Colors.white,
+                                            shadowColor: Colors.grey[500],
+                                            elevation: 5,
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                : Container(),
-                            info[index].imgserv == ''
-                                ? Column(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(10, 50, 10, 0),
-                                        child: IconButton(
-                                          icon: const Icon(Icons.image_search),
-                                          tooltip:
-                                              'Mande uma imagem do serviço',
-                                          color: Colors.red[400],
-                                          iconSize: 60,
-                                          onPressed: () {
-                                            setState(() {
+                                    )
+                                  : Container(),
+                              info[index].imgserv == ''
+                                  ? Column(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 50, 10, 0),
+                                          child: IconButton(
+                                            icon:
+                                                const Icon(Icons.image_search),
+                                            tooltip:
+                                                'Mande uma imagem do serviço',
+                                            color: Colors.red[400],
+                                            iconSize: 60,
+                                            onPressed: () {
                                               _configurandoModalBottomSheet(
                                                   context);
-                                            });
-                                          },
+                                            },
+                                          ),
                                         ),
-                                      ),
-                                      Text('Mande uma Imagem',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white)),
-                                    ],
-                                  )
-                                : Container(),
-                          ],
+                                        Text('Mande uma Imagem',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white)),
+                                      ],
+                                    )
+                                  : Container(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }),
           ),
