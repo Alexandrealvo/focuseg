@@ -28,6 +28,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
     API_INFO_SERV.getInfoServ().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
+        print(lista);
         info = lista.map((model) => Dados_Info_Serv.fromJson(model)).toList();
         isLoading = false;
       });
@@ -228,111 +229,6 @@ class _Info_ServicosState extends State<Info_Servicos> {
     );
   }
 
-  Widget _formwidget() {
-    return Visibility(
-      visible: isForm == true,
-      child: Container(
-        child: Center(
-          child: Form(
-            //autovalidate: true,
-            key: _formulario,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                  child: Container(
-                    //color: Color(0xfff5f5f5),
-                    child: TextFormField(
-                      controller: obs,
-                      maxLines: 4,
-                      maxLength: 1000,
-                      style: TextStyle(
-                          color: Colors.white, fontFamily: 'SFUIDisplay'),
-                      decoration: InputDecoration(
-                          counterStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.red[900], width: 3.0),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: 'Entre com a observação',
-                          //prefixIcon:
-                          // Icon(Icons.mail_outline, color: Colors.white),
-                          labelStyle:
-                              TextStyle(color: Colors.white, fontSize: 16)),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: ButtonTheme(
-                    height: 50.0,
-                    child: TextButton(
-                      onPressed: () {
-                        obs.text == ''
-                            ? Text(
-                                'Campo Vazio',
-                                style: TextStyle(color: Colors.white),
-                              )
-                            : setState(() {
-                                isLoading = true;
-                                _enviar();
-                              });
-                      },
-                      child: Text(
-                        "Enviar",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      style: TextButton.styleFrom(
-                        primary: Colors.white,
-                        backgroundColor: Colors.red[900],
-                        onSurface: Colors.white,
-                        shadowColor: Colors.grey[500],
-                        elevation: 5,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                      ),
-                    ),
-                  ),
-                ),
-                Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
-                      child: IconButton(
-                        icon: const Icon(Icons.image_search),
-                        tooltip: 'Mande uma imagem do serviço',
-                        color: Colors.red[400],
-                        iconSize: 60,
-                        onPressed: () {
-                          setState(() {
-                            _configurandoModalBottomSheet(context);
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text('Mande uma Imagem',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Stack main() {
     return Stack(children: <Widget>[
       Column(
@@ -398,77 +294,176 @@ class _Info_ServicosState extends State<Info_Servicos> {
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          info[index].obs != ""
-                              ? Row(
-                                  children: [
-                                    Container(
-                                      child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(14, 0, 0, 0),
-                                          child: Icon(
-                                            Icons.info_outline,
-                                            color: Colors.red[400],
-                                            size: 24,
-                                          )),
-                                    ),
-                                    Container(
-                                        child: Padding(
+                      info[index].obs != ""
+                          ? Row(
+                              children: [
+                                Container(
+                                  child: Padding(
                                       padding: EdgeInsets.fromLTRB(14, 0, 0, 0),
-                                      child: Text('${info[index].obs}',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white)),
-                                    )),
-                                  ],
-                                )
-                              : Column(),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          info[index].imgserv != ""
-                              ? Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(50, 30, 0, 0),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                                margin: EdgeInsets.fromLTRB(
-                                                    180, 0, 0, 0),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.edit,
-                                                    size: 22,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.red[900],
-                                                )),
-                                          ],
-                                        ),
-                                        width: 200,
-                                        height: 200,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.rectangle,
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
+                                      child: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.red[400],
+                                        size: 24,
+                                      )),
+                                ),
+                                Container(
+                                    child: Padding(
+                                  padding: EdgeInsets.fromLTRB(14, 0, 0, 0),
+                                  child: Text('${info[index].obs}',
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white)),
+                                )),
+                              ],
+                            )
+                          : Container(),
+                      info[index].imgserv != ""
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(50, 30, 0, 0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                180, 0, 0, 0),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.edit,
+                                                size: 22,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.red[900],
                                             )),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                              'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
+                                        )),
                                   ),
-                                )
-                              : Container(),
-                        ],
+                                ],
+                              ),
+                            )
+                          : Container(),
+                      Form(
+                        //autovalidate: true,
+                        key: _formulario,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                              child: Container(
+                                //color: Color(0xfff5f5f5),
+                                child: info[index].obs == ""
+                                    ? TextFormField(
+                                        controller: obs,
+                                        maxLines: 4,
+                                        maxLength: 1000,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'SFUIDisplay'),
+                                        decoration: InputDecoration(
+                                            counterStyle:
+                                                TextStyle(color: Colors.white),
+                                            border: OutlineInputBorder(),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.red[900],
+                                                  width: 3.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                borderSide: BorderSide(
+                                                    color: Colors.white)),
+                                            labelText: 'Entre com a observação',
+                                            //prefixIcon:
+                                            // Icon(Icons.mail_outline, color: Colors.white),
+                                            labelStyle: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16)),
+                                      )
+                                    : Container(),
+                              ),
+                            ),
+                            info[index].obs == ""
+                                ? Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    child: ButtonTheme(
+                                      height: 50.0,
+                                      child: TextButton(
+                                        onPressed: () {
+                                          obs.text == ''
+                                              ? Text(
+                                                  'Campo Vazio',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )
+                                              : setState(() {
+                                                  isLoading = true;
+                                                  _enviar();
+                                                });
+                                        },
+                                        child: Text(
+                                          "Enviar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.red[900],
+                                          onSurface: Colors.white,
+                                          shadowColor: Colors.grey[500],
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                            info[index].imgserv == ''
+                                ? Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 50, 10, 0),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.image_search),
+                                          tooltip:
+                                              'Mande uma imagem do serviço',
+                                          color: Colors.red[400],
+                                          iconSize: 60,
+                                          onPressed: () {
+                                            setState(() {
+                                              _configurandoModalBottomSheet(
+                                                  context);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      Text('Mande uma Imagem',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white)),
+                                    ],
+                                  )
+                                : Container(),
+                          ],
+                        ),
                       ),
-                      _formwidget(),
                     ],
                   );
                 }),
