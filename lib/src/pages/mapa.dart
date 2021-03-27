@@ -70,8 +70,6 @@ class MapaState extends State<Mapa> {
       body: Stack(
         children: <Widget>[
           _buildGoogleMap(context),
-          _zoomminusfunction(),
-          _zoomplusfunction(),
           _buildContainer(),
         ],
       ),
@@ -91,30 +89,6 @@ class MapaState extends State<Mapa> {
     controller.setMapStyle(mapStyle);
   }
 
-  Widget _zoomminusfunction() {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: IconButton(
-          icon: Icon(FontAwesomeIcons.searchMinus, color: Colors.red[900]),
-          onPressed: () {
-            zoomVal--;
-            _minus(zoomVal);
-          }),
-    );
-  }
-
-  Widget _zoomplusfunction() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: IconButton(
-          icon: Icon(FontAwesomeIcons.searchPlus, color: Colors.red[900]),
-          onPressed: () {
-            zoomVal++;
-            _plus(zoomVal);
-          }),
-    );
-  }
-
   Future<void> _minus(double zoomVal) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
@@ -128,35 +102,32 @@ class MapaState extends State<Mapa> {
   }
 
   Widget _buildContainer() {
-    return ListView.builder(
-      itemCount: clientes.length,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, i) {
-        return Align(
-          alignment: Alignment.bottomLeft,
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 20.0),
-            height: 150.0,
-            child: Row(
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 20.0),
+        height: 150.0,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: clientes.length,
+          itemBuilder: (context, i) {
+            return Row(
               children: [
                 SizedBox(width: 10.0),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: _boxes(
-                      "https://focuseg.com.br/areadm/downloads/fotosclientes/${clientes[i].nome_cliente}.png",
-                      -1.350564,
-                      -48.452712,
-                      clientes[i].nome_cliente),
+                  child:
+                      _boxes(-1.350564, -48.452712, clientes[i].nome_cliente),
                 ),
               ],
-            ),
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double long, String restaurantName) {
+  Widget _boxes(double lat, double long, String restaurantName) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, long);
@@ -171,15 +142,6 @@ class MapaState extends State<Mapa> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(width: 180, height: 200, child: Container()
-                      // ClipRRect(
-                      //   borderRadius: new BorderRadius.circular(24.0),
-                      //   child: Image(
-                      //     fit: BoxFit.fill,
-                      //     image: NetworkImage(_image),
-                      //   ),
-                      // ),
-                      ),
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -281,38 +243,34 @@ class MapaState extends State<Mapa> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
-    return ListView.builder(
-        itemCount: clientes.length,
-        itemBuilder: (context, index) {
-          return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                mapType: MapType.normal,
-                zoomControlsEnabled: false,
-                zoomGesturesEnabled: true,
-                scrollGesturesEnabled: true,
-                compassEnabled: true,
-                rotateGesturesEnabled: true,
-                mapToolbarEnabled: true,
-                tiltGesturesEnabled: true,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(-1.4241198, -48.4647034), zoom: 12),
-                onMapCreated: (GoogleMapController controller) {
-                  if (!_controller.isCompleted) {
-                    //first calling is false
-                    //call "completer()"
-                    _controller.complete(controller);
-                  } else {
-                    //other calling, later is true,
-                    //don't call again complet
-                  }
-                  changeMapMode();
-                  //_controller.complete(controller);
-                },
-                markers: _markers,
-              ));
-        });
+    return Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: GoogleMap(
+          mapType: MapType.normal,
+          zoomControlsEnabled: false,
+          zoomGesturesEnabled: true,
+          scrollGesturesEnabled: true,
+          compassEnabled: true,
+          rotateGesturesEnabled: true,
+          mapToolbarEnabled: true,
+          tiltGesturesEnabled: true,
+          initialCameraPosition:
+              CameraPosition(target: LatLng(-1.4241198, -48.4647034), zoom: 12),
+          onMapCreated: (GoogleMapController controller) {
+            if (!_controller.isCompleted) {
+              //first calling is false
+              //call "completer()"
+              _controller.complete(controller);
+            } else {
+              //other calling, later is true,
+              //don't call again complet
+            }
+            changeMapMode();
+            //_controller.complete(controller);
+          },
+          markers: _markers,
+        ));
   }
 
   Future<void> _gotoLocation(double lat, double long) async {
