@@ -24,6 +24,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
   File _selectedFile;
   final uri = Uri.parse("https://focuseg.com.br/flutter/upload_imagem_obs.php");
   bool boxText = false;
+  bool boxImg = true;
 
   _getInfoServ() {
     API_INFO_SERV.getInfoServ().then((response) {
@@ -103,13 +104,10 @@ class _Info_ServicosState extends State<Info_Servicos> {
     if (dados_usuario == 1) {
       setState(() {
         _getInfoServ();
+        boxImg = true;
+        boxText = false;
         isLoading = false;
       });
-      EdgeAlert.show(context,
-          title: 'Sua Obs Foi Incluída com Sucesso',
-          gravity: EdgeAlert.BOTTOM,
-          backgroundColor: Colors.green,
-          icon: Icons.check);
     } else {
       setState(() {
         isLoading = false;
@@ -206,7 +204,8 @@ class _Info_ServicosState extends State<Info_Servicos> {
         centerTitle: true,
         backgroundColor: Colors.red[900],
       ),
-      resizeToAvoidBottomInset: true, //use this
+      resizeToAvoidBottomInset: true, //use
+
       body: SingleChildScrollView(
           child: isLoading
               ? Container(
@@ -298,13 +297,14 @@ class _Info_ServicosState extends State<Info_Servicos> {
                                     onPressed: () {
                                       setState(() {
                                         boxText = !boxText;
+                                        boxImg = !boxImg;
                                       });
                                     },
                                   ),
                                 ),
                               )
                             : Container(),
-                        info[index].imgserv != ""
+                        info[index].imgserv != "" && boxImg == true
                             ? Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(100, 20, 0, 10),
@@ -314,48 +314,51 @@ class _Info_ServicosState extends State<Info_Servicos> {
                                       onTap: () {
                                         _configurandoModalBottomSheet(context);
                                       },
-                                      child: Container(
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                                margin: EdgeInsets.fromLTRB(
-                                                    200, 0, 0, 0),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.edit,
-                                                    size: 24,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.red[900],
-                                                )),
-                                          ],
-                                        ),
-                                        width: 220,
-                                        height: 220,
-                                        decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.white
-                                                    .withOpacity(0.2),
-                                                blurRadius:
-                                                    3.0, // soften the shadow
-                                                spreadRadius:
-                                                    1.0, //extend the shadow
-                                                offset: Offset(
-                                                  5.0, // Move to right 10  horizontally
-                                                  5.0, // Move to bottom 10 Vertically
-                                                ),
-                                              )
-                                            ],
-                                            shape: BoxShape.rectangle,
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
-                                            )),
-                                      ),
+                                      child: boxImg == true
+                                          ? Container(
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                      margin:
+                                                          EdgeInsets.fromLTRB(
+                                                              200, 0, 0, 0),
+                                                      child: Center(
+                                                        child: Icon(
+                                                          Icons.edit,
+                                                          size: 24,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Colors.red[900],
+                                                      )),
+                                                ],
+                                              ),
+                                              width: 220,
+                                              height: 220,
+                                              decoration: BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      blurRadius:
+                                                          3.0, // soften the shadow
+                                                      spreadRadius:
+                                                          1.0, //extend the shadow
+                                                      offset: Offset(
+                                                        5.0, // Move to right 10  horizontally
+                                                        5.0, // Move to bottom 10 Vertically
+                                                      ),
+                                                    )
+                                                  ],
+                                                  shape: BoxShape.rectangle,
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(
+                                                        'https://www.focuseg.com.br/areadm/downloads/fotoservicos/${info[index].imgserv}'),
+                                                  )),
+                                            )
+                                          : Container(),
                                     ),
                                   ],
                                 ),
@@ -369,14 +372,24 @@ class _Info_ServicosState extends State<Info_Servicos> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Padding(
-                                padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                                padding: EdgeInsets.fromLTRB(0, 30, 0, 10),
                                 child: Container(
                                   //color: Color(0xfff5f5f5),
                                   child: info[index].obs == "" ||
                                           boxText == true
                                       ? TextFormField(
+                                          onTap: () {
+                                            FocusScopeNode currentFocus =
+                                                FocusScope.of(context);
+                                            if (!currentFocus.hasPrimaryFocus &&
+                                                currentFocus.focusedChild !=
+                                                    null) {
+                                              currentFocus.focusedChild
+                                                  .unfocus();
+                                            }
+                                          },
                                           controller: obs,
-                                          maxLines: 3,
+                                          maxLines: 2,
                                           maxLength: 500,
                                           style: TextStyle(
                                               color: Colors.white,
