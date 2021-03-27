@@ -22,6 +22,7 @@ class MapaState extends State<Mapa> {
   void initState() {
     super.initState();
     _getClientes();
+    clientesNum();
   }
 
   _getClientes() {
@@ -30,10 +31,25 @@ class MapaState extends State<Mapa> {
         Iterable lista = json.decode(response.body);
         clientes =
             lista.map((model) => Dados_Clientes.fromJson(model)).toList();
+        for (var i = 0; i < clientes.length; i++) {
+          _markers.add(Marker(
+              markerId: MarkerId(clientes[i].nome_cliente),
+              position: LatLng(
+                  double.parse(clientes[i].lat), double.parse(clientes[i].lng)),
+              infoWindow: InfoWindow(
+                title: clientes[i].nome_cliente,
+                snippet: clientes[i].endereco,
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueViolet,
+              )));
+        }
         isLoading = false;
       });
     });
   }
+
+  clientesNum() {}
 
   double zoomVal = 5.0;
   @override
@@ -324,9 +340,7 @@ class MapaState extends State<Mapa> {
                     //other calling, later is true,
                     //don't call again complet
                   }
-                  _markesBuid(context);
                   changeMapMode();
-
                   //_controller.complete(controller);
                 },
                 markers: _markers,
