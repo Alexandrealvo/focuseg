@@ -23,6 +23,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
   List<Dados_Info_Serv> info = <Dados_Info_Serv>[];
   File _selectedFile;
   final uri = Uri.parse("https://focuseg.com.br/flutter/upload_imagem_obs.php");
+  bool boxText = false;
 
   _getInfoServ() {
     API_INFO_SERV.getInfoServ().then((response) {
@@ -276,43 +277,41 @@ class _Info_ServicosState extends State<Info_Servicos> {
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Icon(
-                                Icons.arrow_left,
-                                color: Colors.red[400],
-                                size: 32,
-                              )),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                            child: Text('${info[index].checkout}h',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white)),
-                          ),
-                        ],
+                      ListTile(
+                        leading: Icon(
+                          Icons.arrow_left,
+                          color: Colors.red[400],
+                          size: 32,
+                        ),
+                        title: Text(
+                          '${info[index].checkout}h',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
                       ),
                       info[index].obs != ""
-                          ? Row(
-                              children: [
-                                Container(
-                                  child: Padding(
-                                      padding: EdgeInsets.fromLTRB(14, 0, 0, 0),
-                                      child: Icon(
-                                        Icons.info_outline,
-                                        color: Colors.red[400],
-                                        size: 24,
-                                      )),
+                          ? ListTile(
+                              leading: Icon(
+                                Icons.info_outline,
+                                color: Colors.red[400],
+                                size: 24,
+                              ),
+                              title: Text(
+                                '${info[index].obs}',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  size: 22,
+                                  color: Colors.white,
                                 ),
-                                Container(
-                                    child: Padding(
-                                  padding: EdgeInsets.fromLTRB(14, 0, 0, 0),
-                                  child: Text('${info[index].obs}',
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.white)),
-                                )),
-                              ],
+                                onPressed: () {
+                                  setState(() {
+                                    boxText = !boxText;
+                                  });
+                                },
+                              ),
                             )
                           : Container(),
                       info[index].imgserv != ""
@@ -363,7 +362,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
                               padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
                               child: Container(
                                 //color: Color(0xfff5f5f5),
-                                child: info[index].obs == ""
+                                child: info[index].obs == "" || boxText == true
                                     ? TextFormField(
                                         controller: obs,
                                         maxLines: 4,
@@ -395,7 +394,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
                                     : Container(),
                               ),
                             ),
-                            info[index].obs == ""
+                            info[index].obs == "" || boxText == true
                                 ? Padding(
                                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                     child: ButtonTheme(
