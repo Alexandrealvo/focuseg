@@ -116,8 +116,11 @@ class MapaState extends State<Mapa> {
                 SizedBox(width: 10.0),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child:
-                      _boxes(-1.350564, -48.452712, clientes[i].nome_cliente),
+                  child: _boxes(
+                    double.parse(clientes[i].lat),
+                    double.parse(clientes[i].lng),
+                    clientes[i].nome_cliente,
+                  ),
                 ),
               ],
             );
