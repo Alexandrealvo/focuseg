@@ -369,6 +369,24 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       child: ListTile(
                         title: Text(
+                          'Comunicados',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        leading: Icon(
+                          Icons.campaign,
+                          color: Colors.red[900],
+                          size: 25,
+                        ),
+                        onTap: () {},
+                      ),
+                    ),
+                    Divider(
+                      height: 15,
+                      color: Colors.red[900],
+                    ),
+                    Container(
+                      child: ListTile(
+                        title: Text(
                           'Ajuda',
                           style: TextStyle(fontSize: 16),
                         ),
@@ -405,6 +423,24 @@ class _HomePageState extends State<HomePage> {
                     Divider(
                       height: 15,
                       color: Colors.red[900],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: Container(
+                        child: Text(
+                          'Versão 1.0',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Container(
+                        child: Image.asset(
+                          'images/logo_home.png',
+                          width: 80,
+                        ),
+                      ),
                     ),
                   ],
                 )

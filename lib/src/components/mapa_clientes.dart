@@ -7,9 +7,20 @@ class Dados_Clientes {
   String cel;
   String latlng;
   String tipo;
+  String lat;
+  String lng;
 
-  Dados_Clientes(String idcliente, String nome_cliente, String endereco,
-      String bairrocidade, String tel, String cel, String latlng, String tipo) {
+  Dados_Clientes(
+      String idcliente,
+      String nome_cliente,
+      String endereco,
+      String bairrocidade,
+      String tel,
+      String cel,
+      String latlng,
+      String tipo,
+      String lat,
+      String lng) {
     this.idcliente = idcliente;
     this.nome_cliente = nome_cliente;
     this.endereco = endereco;
@@ -18,6 +29,8 @@ class Dados_Clientes {
     this.cel = cel;
     this.latlng = latlng;
     this.tipo = tipo;
+    this.lat = lat;
+    this.lng = lng;
   }
   Dados_Clientes.fromJson(Map json)
       : idcliente = json['idcliente'],
@@ -27,5 +40,7 @@ class Dados_Clientes {
         tel = json['tel'],
         cel = json['cel'],
         latlng = json['latlng'],
-        tipo = json['tipo'];
+        tipo = json['tipo'],
+        lat = json['lat'],
+        lng = json['lng'];
 }

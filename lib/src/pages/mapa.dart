@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:focus/src/components/api_clientes.dart';
+import 'package:focus/src/components/mapa_clientes.dart';
 
 class Mapa extends StatefulWidget {
   @override
@@ -11,9 +15,24 @@ class Mapa extends StatefulWidget {
 class MapaState extends State<Mapa> {
   Completer<GoogleMapController> _controller = Completer();
 
+  List<Dados_Clientes> clientes = <Dados_Clientes>[];
+  bool isLoading = true;
+  Set<Marker> _markers = {};
   @override
   void initState() {
     super.initState();
+    _getClientes();
+  }
+
+  _getClientes() {
+    API.getClientes().then((response) {
+      setState(() {
+        Iterable lista = json.decode(response.body);
+        clientes =
+            lista.map((model) => Dados_Clientes.fromJson(model)).toList();
+        isLoading = false;
+      });
+    });
   }
 
   double zoomVal = 5.0;
@@ -41,6 +60,19 @@ class MapaState extends State<Mapa> {
         ],
       ),
     );
+  }
+
+  changeMapMode() {
+    getJsonFile("images/mapa.json").then(setMapStyle);
+  }
+
+  Future<String> getJsonFile(String path) async {
+    return await rootBundle.loadString(path);
+  }
+
+  void setMapStyle(String mapStyle) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.setMapStyle(mapStyle);
   }
 
   Widget _zoomminusfunction() {
@@ -247,25 +279,69 @@ class MapaState extends State<Mapa> {
     );
   }
 
+  Widget _markesBuid(BuildContext context) {
+    return ListView.builder(
+        itemCount: clientes.length,
+        itemBuilder: (context, index) {
+          _markers.add(Marker(
+              markerId: MarkerId(clientes[index].nome_cliente),
+              position: LatLng(double.parse(clientes[index].lat),
+                  double.parse(clientes[index].lng)),
+              infoWindow: InfoWindow(
+                title: clientes[index].nome_cliente,
+                snippet: clientes[index].endereco,
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueViolet,
+              )));
+        });
+  }
+
   Widget _buildGoogleMap(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(-1.4241198, -48.4647034), zoom: 12),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: {
-          greenvilleMarker,
-          idealbrMarker,
-          idealsamambaiaMarker,
-          profMarker
-        },
-      ),
-    );
+    return ListView.builder(
+        itemCount: clientes.length,
+        itemBuilder: (context, index) {
+          return Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: GoogleMap(
+                mapType: MapType.normal,
+                zoomControlsEnabled: false,
+                zoomGesturesEnabled: true,
+                scrollGesturesEnabled: true,
+                compassEnabled: true,
+                rotateGesturesEnabled: true,
+                mapToolbarEnabled: true,
+                tiltGesturesEnabled: true,
+                initialCameraPosition: CameraPosition(
+                    target: LatLng(-1.4241198, -48.4647034), zoom: 12),
+                onMapCreated: (GoogleMapController controller) {
+                  if (!_controller.isCompleted) {
+                    //first calling is false
+                    //call "completer()"
+                    _controller.complete(controller);
+                  } else {
+                    //other calling, later is true,
+                    //don't call again complet
+                  }
+                  changeMapMode();
+
+                  //_controller.complete(controller);
+                  _markers.add(Marker(
+                      markerId: MarkerId(clientes[index].nome_cliente),
+                      position: LatLng(double.parse(clientes[index].lat),
+                          double.parse(clientes[index].lng)),
+                      infoWindow: InfoWindow(
+                        title: clientes[index].nome_cliente,
+                        snippet: clientes[index].endereco,
+                      ),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueViolet,
+                      )));
+                },
+                markers: _markers,
+              ));
+        });
   }
 
   Future<void> _gotoLocation(double lat, double long) async {

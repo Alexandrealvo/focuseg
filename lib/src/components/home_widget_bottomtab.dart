@@ -120,11 +120,11 @@ class HomeBottomTab extends StatelessWidget {
                         child: Column(
                           children: <Widget>[
                             Icon(
-                              Icons.mail_outline,
+                              Icons.assignment,
                               size: 50,
                               color: Colors.white,
                             ),
-                            Text("Comunicados",
+                            Text("Relatório",
                                 style: TextStyle(color: Colors.white)),
                           ],
                         )),

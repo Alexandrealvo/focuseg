@@ -254,6 +254,17 @@ class _Info_ServicosState extends State<Info_Servicos> {
                         ),
                         ListTile(
                           leading: Icon(
+                            Icons.build,
+                            color: Colors.red[400],
+                            size: 24,
+                          ),
+                          title: Text(
+                            '${info[index].tipos}',
+                            style: TextStyle(fontSize: 12, color: Colors.white),
+                          ),
+                        ),
+                        ListTile(
+                          leading: Icon(
                             Icons.arrow_left,
                             color: Colors.red[400],
                             size: 32,
@@ -274,6 +285,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
                             style: TextStyle(fontSize: 12, color: Colors.white),
                           ),
                         ),
+
                         info[index].obs != ""
                             ? Card(
                                 color: Colors.grey.withOpacity(.2),
