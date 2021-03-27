@@ -295,24 +295,6 @@ class MapaState extends State<Mapa> {
     );
   }
 
-  Widget _markesBuid(BuildContext context) {
-    return ListView.builder(
-        itemCount: clientes.length,
-        itemBuilder: (context, index) {
-          _markers.add(Marker(
-              markerId: MarkerId(clientes[index].nome_cliente),
-              position: LatLng(double.parse(clientes[index].lat),
-                  double.parse(clientes[index].lng)),
-              infoWindow: InfoWindow(
-                title: clientes[index].nome_cliente,
-                snippet: clientes[index].endereco,
-              ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueViolet,
-              )));
-        });
-  }
-
   Widget _buildGoogleMap(BuildContext context) {
     return ListView.builder(
         itemCount: clientes.length,
