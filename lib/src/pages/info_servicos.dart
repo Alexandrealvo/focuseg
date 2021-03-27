@@ -28,7 +28,6 @@ class _Info_ServicosState extends State<Info_Servicos> {
     API_INFO_SERV.getInfoServ().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
-        print(lista);
         info = lista.map((model) => Dados_Info_Serv.fromJson(model)).toList();
         isLoading = false;
       });
