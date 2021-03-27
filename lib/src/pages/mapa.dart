@@ -128,44 +128,31 @@ class MapaState extends State<Mapa> {
   }
 
   Widget _buildContainer() {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 20.0),
-        height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/greenville2.png",
-                  -1.350564,
-                  -48.452712,
-                  "Greenville II"),
+    return ListView.builder(
+      itemCount: clientes.length,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, i) {
+        return Align(
+          alignment: Alignment.bottomLeft,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 20.0),
+            height: 150.0,
+            child: Row(
+              children: [
+                SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _boxes(
+                      "https://focuseg.com.br/areadm/downloads/fotosclientes/${clientes[i].nome_cliente}.png",
+                      -1.350564,
+                      -48.452712,
+                      clientes[i].nome_cliente),
+                ),
+              ],
             ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/idealbr.png",
-                  -1.395115,
-                  -48.410267,
-                  "Ideal BR "),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "https://focuseg.com.br/areadm/downloads/fotosclientes/idealsamambaia.png",
-                  -1.3549605,
-                  -48.4200819,
-                  "Ideal Samambaia"),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -184,17 +171,15 @@ class MapaState extends State<Mapa> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
+                  Container(width: 180, height: 200, child: Container()
+                      // ClipRRect(
+                      //   borderRadius: new BorderRadius.circular(24.0),
+                      //   child: Image(
+                      //     fit: BoxFit.fill,
+                      //     image: NetworkImage(_image),
+                      //   ),
+                      // ),
                       ),
-                    ),
-                  ),
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -340,38 +325,3 @@ class MapaState extends State<Mapa> {
     )));
   }
 }
-
-Marker greenvilleMarker = Marker(
-  markerId: MarkerId('greenVille'),
-  position: LatLng(-1.350564, -48.452712),
-  infoWindow: InfoWindow(title: 'GreenVille 2'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueRed,
-  ),
-);
-
-Marker idealbrMarker = Marker(
-  markerId: MarkerId('ideal_br'),
-  position: LatLng(-1.395115, -48.410267),
-  infoWindow: InfoWindow(title: 'Ideal BR'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueRed,
-  ),
-);
-
-Marker idealsamambaiaMarker = Marker(
-  markerId: MarkerId('idealsamambaia'),
-  position: LatLng(-1.3549605, -48.4200819),
-  infoWindow: InfoWindow(title: 'Ideal Samambaia'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueRed,
-  ),
-);
-Marker profMarker = Marker(
-  markerId: MarkerId('profissional'),
-  position: LatLng(-1.4241198, -48.4647034),
-  infoWindow: InfoWindow(title: 'Onde Estou'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueGreen,
-  ),
-);
