@@ -324,20 +324,10 @@ class MapaState extends State<Mapa> {
                     //other calling, later is true,
                     //don't call again complet
                   }
+                  _markesBuid(context);
                   changeMapMode();
 
                   //_controller.complete(controller);
-                  _markers.add(Marker(
-                      markerId: MarkerId(clientes[index].nome_cliente),
-                      position: LatLng(double.parse(clientes[index].lat),
-                          double.parse(clientes[index].lng)),
-                      infoWindow: InfoWindow(
-                        title: clientes[index].nome_cliente,
-                        snippet: clientes[index].endereco,
-                      ),
-                      icon: BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueViolet,
-                      )));
                 },
                 markers: _markers,
               ));

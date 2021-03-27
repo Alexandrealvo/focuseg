@@ -98,7 +98,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
               () => [],
             )
             .add(
-                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['data_agenda']} = ${jsonElement['status']}");
+                "${jsonElement['idos']} - ${jsonElement['cliente']} | ${jsonElement['data_agenda']} = ${jsonElement['status']} # ${jsonElement['ctlcheckout']}");
       }
 
       isLoading = false;
@@ -319,18 +319,28 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     //border: Border.all(width: 0.8),
                     borderRadius: BorderRadius.circular(12.0),
-                    color: event.split('=')[1].trim() == 'Pendente Aceite'
+                    color: event.split('=')[1].split('#')[0].trim() ==
+                            'Pendente Aceite'
                         ? Colors.yellow
-                        : event.split('=')[1].trim() == 'Aceito Pendente'
+                        : event.split('=')[1].split('#')[0].trim() ==
+                                'Aceito Pendente'
                             ? Colors.yellow[400]
-                            : event.split('=')[1].trim() == 'Agendado'
+                            : event.split('=')[1].split('#')[0].trim() ==
+                                    'Agendado'
                                 ? Colors.blue[100]
-                                : event.split('=')[1].trim() == 'Em visita'
+                                : event.split('=')[1].split('#')[0].trim() ==
+                                        'Em visita'
                                     ? Colors.deepOrange[300]
-                                    : event.split('=')[1].trim() ==
+                                    : event
+                                                .split('=')[1]
+                                                .split('#')[0]
+                                                .trim() ==
                                             'Visitado | Pendente'
                                         ? Colors.amber
-                                        : event.split('=')[1].trim() ==
+                                        : event
+                                                    .split('=')[1]
+                                                    .split('#')[0]
+                                                    .trim() ==
                                                 'Agendado | Re-visita'
                                             ? Colors.blue
                                             : Colors.green,
@@ -338,6 +348,11 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                   margin: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
+                    trailing: Text(
+                      "OS ${event.split('-')[0]}",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
                     title: Text(
                       event.split('-')[1].split('|')[0],
                       style: TextStyle(
@@ -353,11 +368,14 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                       var dataagenda = event.split('|');
                       var dtagenda = dataagenda[1].trim().substring(0, 10);
 
-                      if (dtagenda == now) {
+                      var checkout = event.split('#');
+
+                      if (dtagenda == now && checkout[1].trim() == "0") {
                         _abrir_mapa(idOs);
                       } else {
                         _abrir_page_info(idOs);
                       }
+                      print(event.split('=')[1].split('#')[0].trim());
                     },
                   ),
                 ))
