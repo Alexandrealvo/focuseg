@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:focus/src/components/utils/box_search.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:focus/src/components/api_clientes.dart';
@@ -16,6 +17,7 @@ class MapaState extends State<Mapa> {
   Completer<GoogleMapController> _controller = Completer();
   List<Dados_Clientes> clientes = <Dados_Clientes>[];
   bool isLoading = true;
+  bool isSearching = false;
   Set<Marker> _markers = {};
 
   @override
@@ -51,6 +53,21 @@ class MapaState extends State<Mapa> {
 
   clientesNum() {}
 
+  var search = TextEditingController();
+  var searchResult = [];
+
+  onSearchTextChanged(String text) {
+    searchResult.clear();
+    if (text.isEmpty) {
+      return;
+    }
+    clientes.forEach((details) {
+      if (details.nome_cliente.toLowerCase().contains(text.toLowerCase()))
+        searchResult.add(details);
+      setState(() {});
+    });
+  }
+
   double zoomVal = 5.0;
   @override
   Widget build(BuildContext context) {
@@ -63,7 +80,9 @@ class MapaState extends State<Mapa> {
           IconButton(
               icon: Icon(FontAwesomeIcons.search),
               onPressed: () {
-                print('procurar');
+                setState(() {
+                  isSearching = !isSearching;
+                });
               }),
         ],
       ),
@@ -85,6 +104,9 @@ class MapaState extends State<Mapa> {
           : Stack(
               children: <Widget>[
                 _buildGoogleMap(context),
+                isSearching
+                    ? boxSearch(context, search, onSearchTextChanged)
+                    : Container(),
                 _buildContainer(),
               ],
             ),
@@ -110,27 +132,49 @@ class MapaState extends State<Mapa> {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: clientes.length,
-          itemBuilder: (context, i) {
-            return Row(
-              children: [
-                SizedBox(width: 10.0),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _boxes(
-                    double.parse(clientes[i].lat),
-                    double.parse(clientes[i].lng),
-                    clientes[i].nome_cliente,
-                    clientes[i].endereco,
-                    clientes[i].bairrocidade,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+        child: searchResult.isNotEmpty || search.value.text.isNotEmpty
+            ? ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: searchResult.length,
+                itemBuilder: (context, i) {
+                  return Row(
+                    children: [
+                      SizedBox(width: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _boxes(
+                          double.parse(searchResult[i].lat),
+                          double.parse(searchResult[i].lng),
+                          searchResult[i].nome_cliente,
+                          searchResult[i].endereco,
+                          searchResult[i].bairrocidade,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              )
+            : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: clientes.length,
+                itemBuilder: (context, i) {
+                  return Row(
+                    children: [
+                      SizedBox(width: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _boxes(
+                          double.parse(clientes[i].lat),
+                          double.parse(clientes[i].lng),
+                          clientes[i].nome_cliente,
+                          clientes[i].endereco,
+                          clientes[i].bairrocidade,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
       ),
     );
   }

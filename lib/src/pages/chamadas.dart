@@ -127,10 +127,20 @@ class _ChamadasState extends State<Chamadas> {
                       },
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10)),
-                      child: Text(
-                        "Aceitar",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              "Aceitar",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
                       color: Colors.green,
                     ),
                   ),
@@ -147,10 +157,20 @@ class _ChamadasState extends State<Chamadas> {
                       },
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(10)),
-                      child: Text(
-                        "Recusar",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              "Recusar",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
                       color: Colors.red,
                     ),
                   ),

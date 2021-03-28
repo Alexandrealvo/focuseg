@@ -25,9 +25,11 @@ dependencies:
   cupertino_icons: ^0.1.2
   edge_alert: ^0.0.1
   email_validator: null
-  flutter_statusbarcolor: ^0.2.3
+  flutter_icons: ^1.1.0
   flutter_plugin_android_lifecycle: ^2.0.0
+  flutter_statusbarcolor: ^0.2.3
   font_awesome_flutter: ^9.0.0
+  geolocator: ^7.0.1
   google_fonts: ^2.0.0
   google_maps_flutter: ^2.0.1
   http: ^0.13.0
@@ -37,15 +39,14 @@ dependencies:
   intl: ^0.17.0
   local_auth: ^1.1.0
   location: ^4.1.1
+  modal_bottom_sheet: ^2.0.0
+  onesignal_flutter: ^2.6.3
   path_provider: ^2.0.0
+  rflutter_alert: ^2.0.2
   shared_preferences: ^2.0.4
   table_calendar: ^2.3.0
-  url_launcher: ^6.0.2 
-  geolocator: ^7.0.1
-  onesignal_flutter: ^2.6.3
+  url_launcher: ^6.0.2
   whatsapp_unilink: ^1.0.0+1
-  rflutter_alert: ^2.0.2
-  modal_bottom_sheet: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -69,4 +70,3 @@ flutter:
     - images/semregistro.png
     - images/iconmap.png
     - images/mapa.json
-  

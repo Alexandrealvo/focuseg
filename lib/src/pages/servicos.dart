@@ -4,6 +4,7 @@ import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_servicos.dart';
 import 'package:focus/src/components/mapa_servicos.dart';
+import 'package:focus/src/components/utils/box_search.dart';
 import 'package:focus/src/pages/calendario.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -257,11 +258,22 @@ class _ServicosState extends State<Servicos> {
                                             idos);
                                       });
                                     },
-                                    child: Text(
-                                      "Reagendar",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
-                                    ),
+                                    child: isLoading
+                                        ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                      Colors.white),
+                                            ),
+                                          )
+                                        : Text(
+                                            "Reagendar",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
                                     style: TextButton.styleFrom(
                                       primary: Colors.white,
                                       backgroundColor: Colors.green,
@@ -285,11 +297,22 @@ class _ServicosState extends State<Servicos> {
                                       Navigator.of(context).pop();
                                       _abrir_agenda();
                                     },
-                                    child: Text(
-                                      "Agenda",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
-                                    ),
+                                    child: isLoading
+                                        ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                      Colors.white),
+                                            ),
+                                          )
+                                        : Text(
+                                            "Agenda",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
                                     style: TextButton.styleFrom(
                                       primary: Colors.white,
                                       backgroundColor: Colors.red[400],
@@ -312,11 +335,22 @@ class _ServicosState extends State<Servicos> {
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: Text(
-                                      "Cancelar",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
-                                    ),
+                                    child: isLoading
+                                        ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                      Colors.white),
+                                            ),
+                                          )
+                                        : Text(
+                                            "Cancelar",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
                                     style: TextButton.styleFrom(
                                       primary: Colors.white,
                                       backgroundColor: Colors.blueGrey,
@@ -383,6 +417,21 @@ class _ServicosState extends State<Servicos> {
     _getServicos();
   }
 
+  var search = TextEditingController();
+  List<Dados_Servicos> searchResult = <Dados_Servicos>[];
+
+  onSearchTextChanged(String text) {
+    searchResult.clear();
+    if (text.isEmpty) {
+      return;
+    }
+    servicos.forEach((details) {
+      if (details.nome_cliente.toLowerCase().contains(text.toLowerCase()))
+        searchResult.add(details);
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -390,6 +439,7 @@ class _ServicosState extends State<Servicos> {
         title: Text('Serviços'),
         centerTitle: true,
         backgroundColor: Colors.red[900],
+        elevation: 0,
       ),
       body: isLoading
           ? Container(
@@ -406,7 +456,14 @@ class _ServicosState extends State<Servicos> {
                 ),
               ),
             )
-          : _listaServicos(),
+          : Column(
+              children: [
+                boxSearch(context, search, onSearchTextChanged),
+                Expanded(
+                  child: _listaServicos(),
+                )
+              ],
+            ),
     );
   }
 
@@ -455,62 +512,121 @@ class _ServicosState extends State<Servicos> {
         ],
       );
     } else {
-      return Container(
-        color: Colors.black,
-        child: ListView.builder(
-            itemCount: servicos.length,
-            itemBuilder: (context, index) {
-              return Card(
-                color: servicos[index].status == 'Pendente Aceite'
-                    ? Colors.yellow
-                    : servicos[index].status == 'Aceito Pendente'
-                        ? Colors.yellow[400]
-                        : servicos[index].status == 'Agendado'
-                            ? Colors.blue[100]
-                            : servicos[index].status == 'Em visita'
-                                ? Colors.deepOrange[300]
-                                : servicos[index].status ==
-                                        'Visitado | Pendente'
-                                    ? Colors.amber
-                                    : servicos[index].status ==
-                                            'Agendado | Re-visita'
-                                        ? Colors.blue
-                                        : Colors.green,
-                margin: EdgeInsets.all(8),
-                child: ListTile(
-                  onTap: () {
-                    _configurandoModalBottomSheet(
-                      context,
-                      servicos[index].nome_cliente,
-                      servicos[index].endereco,
-                      servicos[index].tipos,
-                      servicos[index].idProf,
-                      servicos[index].status,
-                      servicos[index].idServ,
-                      servicos[index].idos,
-                      servicos[index].dt_agenda,
+      return searchResult.isNotEmpty || search.value.text.isNotEmpty
+          ? Container(
+              color: Colors.black,
+              child: ListView.builder(
+                  itemCount: searchResult.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: searchResult[index].status == 'Pendente Aceite'
+                          ? Colors.yellow
+                          : searchResult[index].status == 'Aceito Pendente'
+                              ? Colors.yellow[400]
+                              : searchResult[index].status == 'Agendado'
+                                  ? Colors.blue[100]
+                                  : searchResult[index].status == 'Em visita'
+                                      ? Colors.deepOrange[300]
+                                      : searchResult[index].status ==
+                                              'Visitado | Pendente'
+                                          ? Colors.amber
+                                          : searchResult[index].status ==
+                                                  'Agendado | Re-visita'
+                                              ? Colors.blue
+                                              : Colors.green,
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        onTap: () {
+                          _configurandoModalBottomSheet(
+                            context,
+                            searchResult[index].nome_cliente,
+                            searchResult[index].endereco,
+                            searchResult[index].tipos,
+                            searchResult[index].idProf,
+                            searchResult[index].status,
+                            searchResult[index].idServ,
+                            searchResult[index].idos,
+                            searchResult[index].dt_agenda,
+                          );
+                        },
+                        leading: Icon(Icons.build_circle_outlined,
+                            size: 32, color: Colors.red[900]),
+                        title: Text(searchResult[index].nome_cliente,
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.black54)),
+                        trailing: Text("OS " + searchResult[index].idos,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54)),
+                        subtitle: Text(
+                          searchResult[index].data_create,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black26),
+                        ),
+                      ),
                     );
-                  },
-                  leading: Icon(Icons.build_circle_outlined,
-                      size: 32, color: Colors.red[900]),
-                  title: Text(servicos[index].nome_cliente,
-                      style: TextStyle(fontSize: 18, color: Colors.black54)),
-                  trailing: Text("OS " + servicos[index].idos,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54)),
-                  subtitle: Text(
-                    servicos[index].data_create,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black26),
-                  ),
-                ),
-              );
-            }),
-      );
+                  }),
+            )
+          : Container(
+              color: Colors.black,
+              child: ListView.builder(
+                  itemCount: servicos.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: servicos[index].status == 'Pendente Aceite'
+                          ? Colors.yellow
+                          : servicos[index].status == 'Aceito Pendente'
+                              ? Colors.yellow[400]
+                              : servicos[index].status == 'Agendado'
+                                  ? Colors.blue[100]
+                                  : servicos[index].status == 'Em visita'
+                                      ? Colors.deepOrange[300]
+                                      : servicos[index].status ==
+                                              'Visitado | Pendente'
+                                          ? Colors.amber
+                                          : servicos[index].status ==
+                                                  'Agendado | Re-visita'
+                                              ? Colors.blue
+                                              : Colors.green,
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        onTap: () {
+                          _configurandoModalBottomSheet(
+                            context,
+                            servicos[index].nome_cliente,
+                            servicos[index].endereco,
+                            servicos[index].tipos,
+                            servicos[index].idProf,
+                            servicos[index].status,
+                            servicos[index].idServ,
+                            servicos[index].idos,
+                            servicos[index].dt_agenda,
+                          );
+                        },
+                        leading: Icon(Icons.build_circle_outlined,
+                            size: 32, color: Colors.red[900]),
+                        title: Text(servicos[index].nome_cliente,
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.black54)),
+                        trailing: Text("OS " + servicos[index].idos,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54)),
+                        subtitle: Text(
+                          servicos[index].data_create,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black26),
+                        ),
+                      ),
+                    );
+                  }),
+            );
     }
   }
 }
