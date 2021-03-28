@@ -14,10 +14,10 @@ class Mapa extends StatefulWidget {
 
 class MapaState extends State<Mapa> {
   Completer<GoogleMapController> _controller = Completer();
-
   List<Dados_Clientes> clientes = <Dados_Clientes>[];
   bool isLoading = true;
   Set<Marker> _markers = {};
+
   @override
   void initState() {
     super.initState();
@@ -67,12 +67,27 @@ class MapaState extends State<Mapa> {
               }),
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          _buildGoogleMap(context),
-          _buildContainer(),
-        ],
-      ),
+      body: isLoading
+          ? Container(
+              height: MediaQuery.of(context).size.height,
+              color: Colors.black,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    valueColor: AlwaysStoppedAnimation(Colors.red[900]),
+                  ),
+                  height: 40,
+                  width: 40,
+                ),
+              ),
+            )
+          : Stack(
+              children: <Widget>[
+                _buildGoogleMap(context),
+                _buildContainer(),
+              ],
+            ),
     );
   }
 
@@ -87,18 +102,6 @@ class MapaState extends State<Mapa> {
   void setMapStyle(String mapStyle) async {
     final GoogleMapController controller = await _controller.future;
     controller.setMapStyle(mapStyle);
-  }
-
-  Future<void> _minus(double zoomVal) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(-1.4241198, -48.4668921), zoom: zoomVal)));
-  }
-
-  Future<void> _plus(double zoomVal) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(-1.4241198, -48.4668921), zoom: zoomVal)));
   }
 
   Widget _buildContainer() {
@@ -120,6 +123,8 @@ class MapaState extends State<Mapa> {
                     double.parse(clientes[i].lat),
                     double.parse(clientes[i].lng),
                     clientes[i].nome_cliente,
+                    clientes[i].endereco,
+                    clientes[i].bairrocidade,
                   ),
                 ),
               ],
@@ -130,7 +135,8 @@ class MapaState extends State<Mapa> {
     );
   }
 
-  Widget _boxes(double lat, double long, String restaurantName) {
+  Widget _boxes(
+      double lat, double long, String nome, String end, String bairro) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, long);
@@ -138,7 +144,7 @@ class MapaState extends State<Mapa> {
       child: Container(
         child: new FittedBox(
           child: Material(
-              color: Colors.white,
+              color: Colors.red[900],
               elevation: 14.0,
               borderRadius: BorderRadius.circular(24.0),
               shadowColor: Color(0x802196F3),
@@ -148,7 +154,7 @@ class MapaState extends State<Mapa> {
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
+                      child: myDetailsContainer1(nome, end, bairro),
                     ),
                   ),
                 ],
@@ -158,89 +164,39 @@ class MapaState extends State<Mapa> {
     );
   }
 
-  Widget myDetailsContainer1(String restaurantName) {
+  Widget myDetailsContainer1(String nome, end, bairro) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: Container(
               child: Text(
-            restaurantName,
+            nome,
             style: TextStyle(
-                color: Colors.red[900],
-                fontSize: 24.0,
+                color: Colors.white,
+                fontSize: 14.0,
                 fontWeight: FontWeight.bold),
           )),
         ),
         SizedBox(height: 5.0),
-        /*Container(
-            child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStar,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-              child: Icon(
-                FontAwesomeIcons.solidStarHalf,
-                color: Colors.amber,
-                size: 15.0,
-              ),
-            ),
-            Container(
-                child: Text(
-              "(946)",
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 18.0,
-              ),
-            )),
-          ],
-        )),
-        SizedBox(height: 5.0),
         Container(
             child: Text(
-          "American \u00B7 \u0024\u0024 \u00B7 1.6 mi",
+          end,
           style: TextStyle(
-            color: Colors.black54,
-            fontSize: 18.0,
+            color: Colors.white,
+            fontSize: 12,
           ),
         )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-          "Closed \u00B7 Opens 17:00 Thu",
+          bairro,
           style: TextStyle(
-              color: Colors.black54,
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold),
-        )),*/
+            color: Colors.white,
+            fontSize: 12.0,
+          ),
+        )),
       ],
     );
   }
