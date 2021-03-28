@@ -367,15 +367,16 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                       var now = new DateTime.now().toString().substring(0, 10);
                       var dataagenda = event.split('|');
                       var dtagenda = dataagenda[1].trim().substring(0, 10);
-
+                      var hoje = new DateTime.now();
+                      var datajson = DateTime.parse(dtagenda);
                       var checkout = event.split('#');
+                      var result = datajson.isAfter(hoje);
 
                       if (dtagenda == now && checkout[1].trim() == "0") {
                         _abrir_mapa(idOs);
-                      } else {
+                      } else if (result == false) {
                         _abrir_page_info(idOs);
-                      }
-                      print(event.split('=')[1].split('#')[0].trim());
+                      } else {}
                     },
                   ),
                 ))
