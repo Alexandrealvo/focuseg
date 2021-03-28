@@ -426,7 +426,9 @@ class _ServicosState extends State<Servicos> {
       return;
     }
     servicos.forEach((details) {
-      if (details.nome_cliente.toLowerCase().contains(text.toLowerCase()))
+      if (details.nome_cliente.toLowerCase().contains(text.toLowerCase()) ||
+          details.idos.toLowerCase().contains(text.toLowerCase()) ||
+          details.data_create.toLowerCase().contains(text.toLowerCase()))
         searchResult.add(details);
       setState(() {});
     });

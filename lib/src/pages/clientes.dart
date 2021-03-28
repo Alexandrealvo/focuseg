@@ -5,8 +5,11 @@ import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:focus/src/components/api_clientes.dart';
 import 'package:focus/src/components/mapa_clientes.dart';
+import 'package:focus/src/components/utils/box_search.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../components/mapa_clientes.dart';
 
 class Clientes extends StatefulWidget {
   @override
@@ -87,6 +90,22 @@ class _ClientesState extends State<Clientes> {
           backgroundColor: Colors.red,
           icon: Icons.highlight_off);
     }
+  }
+
+  var search = TextEditingController();
+  List<Dados_Clientes> searchResult = <Dados_Clientes>[];
+
+  onSearchTextChanged(String text) {
+    searchResult.clear();
+    if (text.isEmpty) {
+      return;
+    }
+    clientes.forEach((details) {
+      if (details.nome_cliente.toLowerCase().contains(text.toLowerCase()) ||
+          details.tipo.toLowerCase().contains(text.toLowerCase()))
+        searchResult.add(details);
+      setState(() {});
+    });
   }
 
   void _configurandoModalBottomSheet(
@@ -204,6 +223,7 @@ class _ClientesState extends State<Clientes> {
         title: Text('Clientes'),
         centerTitle: true,
         backgroundColor: Colors.red[900],
+        elevation: 0,
       ),
       body: isLoading
           ? Container(
@@ -220,7 +240,14 @@ class _ClientesState extends State<Clientes> {
                 ),
               ),
             )
-          : _listaClientes(),
+          : Column(
+              children: [
+                boxSearch(context, search, onSearchTextChanged),
+                Expanded(
+                  child: _listaClientes(),
+                )
+              ],
+            ),
     );
   }
 
@@ -269,48 +296,93 @@ class _ClientesState extends State<Clientes> {
         ],
       );
     } else {
-      return Container(
-        color: Colors.black,
-        child: ListView.builder(
-            itemCount: clientes.length,
-            itemBuilder: (context, index) {
-              return Card(
-                color: Colors.grey[50],
-                margin: EdgeInsets.all(8),
-                child: ListTile(
-                  onTap: () {
-                    _configurandoModalBottomSheet(
-                      context,
-                      clientes[index].nome_cliente,
-                      clientes[index].endereco,
-                      clientes[index].bairrocidade,
-                      clientes[index].tel,
-                      clientes[index].cel,
-                      clientes[index].latlng,
-                      clientes[index].tipo,
+      return searchResult.isNotEmpty || search.value.text.isNotEmpty
+          ? Container(
+              color: Colors.black,
+              child: ListView.builder(
+                  itemCount: searchResult.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey[50],
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        onTap: () {
+                          _configurandoModalBottomSheet(
+                            context,
+                            searchResult[index].nome_cliente,
+                            searchResult[index].endereco,
+                            searchResult[index].bairrocidade,
+                            searchResult[index].tel,
+                            searchResult[index].cel,
+                            searchResult[index].latlng,
+                            searchResult[index].tipo,
+                          );
+                        },
+                        selected: true,
+                        leading: Icon(
+                          Icons.business,
+                          color: Colors.red[900],
+                          size: 32,
+                        ),
+                        title: Text(searchResult[index].nome_cliente,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold)),
+                        trailing:
+                            Icon(Icons.arrow_right, color: Colors.red[900]),
+                        subtitle: Text(searchResult[index].tipo,
+                            style: TextStyle(
+                                fontSize: 14,
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                      ),
                     );
-                  },
-                  selected: true,
-                  leading: Icon(
-                    Icons.business,
-                    color: Colors.red[900],
-                    size: 32,
-                  ),
-                  title: Text(clientes[index].nome_cliente,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.bold)),
-                  trailing: Icon(Icons.arrow_right, color: Colors.red[900]),
-                  subtitle: Text('${clientes[index].tipo}',
-                      style: TextStyle(
-                          fontSize: 14,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black)),
-                ),
-              );
-            }),
-      );
+                  }),
+            )
+          : Container(
+              color: Colors.black,
+              child: ListView.builder(
+                  itemCount: clientes.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey[50],
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        onTap: () {
+                          _configurandoModalBottomSheet(
+                            context,
+                            clientes[index].nome_cliente,
+                            clientes[index].endereco,
+                            clientes[index].bairrocidade,
+                            clientes[index].tel,
+                            clientes[index].cel,
+                            clientes[index].latlng,
+                            clientes[index].tipo,
+                          );
+                        },
+                        selected: true,
+                        leading: Icon(
+                          Icons.business,
+                          color: Colors.red[900],
+                          size: 32,
+                        ),
+                        title: Text(clientes[index].nome_cliente,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold)),
+                        trailing:
+                            Icon(Icons.arrow_right, color: Colors.red[900]),
+                        subtitle: Text(clientes[index].tipo,
+                            style: TextStyle(
+                                fontSize: 14,
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                      ),
+                    );
+                  }),
+            );
     }
   }
 }

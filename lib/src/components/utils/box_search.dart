@@ -8,38 +8,38 @@ Widget boxSearch(
   onSearchTextChanged,
 ) {
   return Container(
-    padding: EdgeInsets.all(5),
+    padding: EdgeInsets.all(10),
     color: Colors.red[900],
     child: TextField(
       onChanged: onSearchTextChanged == '' ? null : onSearchTextChanged,
       controller: searchController,
       style: GoogleFonts.montserrat(
         fontSize: 18,
-        color: Colors.black,
+        color: Colors.white,
       ),
       decoration: InputDecoration(
-        labelText: "Pesquise pelo nome",
+        /*labelText: "Pesquise",
         labelStyle: GoogleFonts.montserrat(
           fontSize: 18,
-          color: Colors.black,
-        ),
+          color: Colors.white,
+        ),*/
         prefixIcon: Icon(
           Feather.search,
-          color: Colors.black,
+          color: Colors.white,
           size: 23,
         ),
         isDense: true,
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black,
-            width: 1,
+            color: Colors.white,
+            width: 2,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black,
+            color: Colors.white,
           ),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
     ),
