@@ -50,6 +50,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   void dispose() {
     _animationController.dispose();
     _calendarController.dispose();
+
     super.dispose();
   }
 
