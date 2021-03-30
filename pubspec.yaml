@@ -47,6 +47,7 @@ dependencies:
   table_calendar: ^2.3.0
   url_launcher: ^6.0.2
   whatsapp_unilink: ^1.0.0+1
+  flutter_cache_manager: ^3.0.1
 
 dev_dependencies:
   flutter_test:

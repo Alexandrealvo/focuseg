@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:focus/src/components/api.mapa_agenda.dart';
 import 'package:focus/src/components/mapa_mapagenda.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -46,6 +50,16 @@ class MapaAgendaState extends State<MapaAgenda> {
       radius: 80,
     )
   ]);
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        .buffer
+        .asUint8List();
+  }
 
   changeMapMode() {
     getJsonFile("images/mapa.json").then(setMapStyle);
@@ -155,28 +169,42 @@ class MapaAgendaState extends State<MapaAgenda> {
     );
   }
 
-  void _timer() async {
+  void _timer(String url) async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     currentPosition = position;
     LatLng latLatAtual = LatLng(position.latitude, position.longitude);
 
-    Future.delayed(Duration(seconds: 2)).then((_) {
-      setState(() {
-        _markers.add(Marker(
+    Future.delayed(Duration(seconds: 2)).then((_) async {
+      final File markerImageFile =
+          await DefaultCacheManager().getSingleFile(url);
+      final Uint8List markerImageBytes = await markerImageFile.readAsBytes();
+
+      ui.Codec codec =
+          await ui.instantiateImageCodec(markerImageBytes, targetWidth: 80);
+      ui.FrameInfo fi = await codec.getNextFrame();
+
+      final Uint8List markerImage =
+          (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+              .buffer
+              .asUint8List();
+
+      if (this.mounted) {
+        // check whether the state object is in tree
+        setState(() {
+          _markers.add(Marker(
             markerId: MarkerId('Estou Aqui!'),
             position: latLatAtual,
             infoWindow: InfoWindow(
               title: 'Minha Localização',
-              snippet: "$latLatAtual",
+              snippet: "$position",
             ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRed,
-            )));
+            icon: BitmapDescriptor.fromBytes(markerImage),
+          ));
+        });
+      }
 
-        // Anything else you want
-      });
-      _timer();
+      _timer(url);
     });
   }
 
@@ -663,39 +691,60 @@ class MapaAgendaState extends State<MapaAgenda> {
                         CameraUpdate.newLatLngBounds(bounds, 50));
                   }
                   //chama a atualização recorrente
-                  _timer();
 
-                  // insere os markers
-                  setState(() {
-                    mapa_agenda[index].ctlcheckin == "0"
-                        ? cor = Colors.yellow.withOpacity(0.3)
-                        : (mapa_agenda[index].ctlcheckin == "1" &&
-                                mapa_agenda[index].ctlcheckout == "0")
-                            ? cor = Colors.red[900].withOpacity(0.3)
-                            : cor = Colors.green.withOpacity(0.3);
+                  /*final Uint8List markerIconCliente =
+                      await getBytesFromAsset('images/iconCliente.png', 200);*/
 
-                    _markers.add(Marker(
-                        markerId: MarkerId(mapa_agenda[index].cliente),
-                        position: LatLng(double.parse(mapa_agenda[index].lat),
-                            double.parse(mapa_agenda[index].lng)),
-                        infoWindow: InfoWindow(
-                          title: mapa_agenda[index].cliente,
-                          snippet: mapa_agenda[index].endereco,
-                        ),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueViolet,
-                        )));
-                    _markers.add(Marker(
+                  final imageURL =
+                      'https://www.focuseg.com.br/areadm/downloads/fotosprofissionais/${mapa_agenda[index].imgperfil}';
+
+                  final File markerImageFile =
+                      await DefaultCacheManager().getSingleFile(imageURL);
+                  final Uint8List markerImageBytes =
+                      await markerImageFile.readAsBytes();
+
+                  ui.Codec codec = await ui
+                      .instantiateImageCodec(markerImageBytes, targetWidth: 80);
+                  ui.FrameInfo fi = await codec.getNextFrame();
+
+                  final Uint8List markerImage = (await fi.image
+                          .toByteData(format: ui.ImageByteFormat.png))
+                      .buffer
+                      .asUint8List();
+                  if (this.mounted) {
+                    // check whether the state object is in tree
+                    setState(() {
+                      mapa_agenda[index].ctlcheckin == "0"
+                          ? cor = Colors.yellow.withOpacity(0.3)
+                          : (mapa_agenda[index].ctlcheckin == "1" &&
+                                  mapa_agenda[index].ctlcheckout == "0")
+                              ? cor = Colors.red[900].withOpacity(0.3)
+                              : cor = Colors.green.withOpacity(0.3);
+
+                      _markers.add(Marker(
+                          markerId: MarkerId(mapa_agenda[index].cliente),
+                          position: LatLng(double.parse(mapa_agenda[index].lat),
+                              double.parse(mapa_agenda[index].lng)),
+                          infoWindow: InfoWindow(
+                            title: mapa_agenda[index].cliente,
+                            snippet: mapa_agenda[index].endereco,
+                          ),
+                          icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueViolet,
+                          )));
+                      _markers.add(Marker(
                         markerId: MarkerId('Estou Aqui!'),
                         position: latLatPosition,
                         infoWindow: InfoWindow(
                           title: 'Minha Localização',
                           snippet: "",
                         ),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueRed,
-                        )));
-                  });
+                        icon: BitmapDescriptor.fromBytes(markerImage),
+                      ));
+                    });
+                  }
+
+                  _timer(imageURL);
                 },
                 circles: Set.from([
                   Circle(
