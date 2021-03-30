@@ -655,20 +655,21 @@ class _ServicosState extends State<Servicos> {
                         },
                         leading: Icon(Icons.build_circle_outlined,
                             size: 32, color: Colors.red[900]),
-                        title: Text(searchResult[index].nome_cliente,
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.black54)),
+                        title: Text(
+                          searchResult[index].nome_cliente,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500),
+                        ),
                         trailing: Text("OS " + searchResult[index].idos,
                             style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black54)),
+                                color: Colors.black)),
                         subtitle: Text(
                           searchResult[index].data_create,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black26),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ),
                     );
