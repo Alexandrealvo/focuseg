@@ -250,12 +250,14 @@ class _ClientesState extends State<Clientes> {
                 ),
               ),
             )
-          : Stack(
-              children: <Widget>[
-                _listaClientes(),
+          : Column(
+              children: [
                 isSearching
                     ? boxSearch(context, search, onSearchTextChanged)
                     : Container(),
+                Expanded(
+                  child: _listaClientes(),
+                )
               ],
             ),
     );

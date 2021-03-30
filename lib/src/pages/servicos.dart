@@ -513,6 +513,7 @@ class _ServicosState extends State<Servicos> {
                 builder: (context) =>
                     HomePage(id, nome, tipo, imgperfil, email)),
             (Route<dynamic> route) => false);
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -545,12 +546,14 @@ class _ServicosState extends State<Servicos> {
                   ),
                 ),
               )
-            : Stack(
-                children: <Widget>[
-                  _listaServicos(),
+            : Column(
+                children: [
                   isSearching
                       ? boxSearch(context, search, onSearchTextChanged)
                       : Container(),
+                  Expanded(
+                    child: _listaServicos(),
+                  ),
                 ],
               ),
       ),
