@@ -690,10 +690,9 @@ class MapaAgendaState extends State<MapaAgenda> {
                     controller.animateCamera(
                         CameraUpdate.newLatLngBounds(bounds, 50));
                   }
-                  //chama a atualização recorrente
 
                   /*final Uint8List markerIconCliente =
-                      await getBytesFromAsset('images/iconCliente.png', 200);*/
+                      await getBytesFromAsset('images/logo.png', 200);*/
 
                   final imageURL =
                       'https://www.focuseg.com.br/areadm/downloads/fotosprofissionais/${mapa_agenda[index].imgperfil}';
@@ -740,11 +739,15 @@ class MapaAgendaState extends State<MapaAgenda> {
                           snippet: "",
                         ),
                         icon: BitmapDescriptor.fromBytes(markerImage),
+                        // Se vc trocar pra esse ele vem do PATH  (markerIconCliente)
                       ));
                     });
                   }
+                  //chama a atualização setTimer atualizando o map do profissional
 
                   _timer(imageURL);
+
+                  ////////////
                 },
                 circles: Set.from([
                   Circle(
