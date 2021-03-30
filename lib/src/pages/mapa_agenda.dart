@@ -13,6 +13,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:focus/src/pages/info_servicos.dart';
 
+import 'home_page.dart';
+
 //const url_check = "https://focuseg.com.br/flutter/check.php";
 
 class MapaAgenda extends StatefulWidget {
@@ -78,41 +80,57 @@ class MapaAgendaState extends State<MapaAgenda> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Mapa"),
-        centerTitle: true,
-        backgroundColor: Colors.red[900],
-        /* actions: <Widget>[
-          IconButton(
-              icon: Icon(FontAwesomeIcons.search),
-              onPressed: () {
-                print('procurar');
-              }),
-        ],*/
-      ),
-      body: isLoading
-          ? Container(
-              height: MediaQuery.of(context).size.height,
-              color: Colors.black,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4,
-                    valueColor: AlwaysStoppedAnimation(Colors.red[900]),
+    return WillPopScope(
+      onWillPop: () async {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String nome = prefs.getString('nome');
+        final String tipo = prefs.getString('tipo');
+        final String imgperfil = prefs.getString('imgperfil');
+        final String email = prefs.getString('email');
+        final String id = prefs.getString('idusu');
+
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomePage(id, nome, tipo, imgperfil, email)),
+            (Route<dynamic> route) => false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Mapa"),
+          centerTitle: true,
+          backgroundColor: Colors.red[900],
+          /* actions: <Widget>[
+            IconButton(
+                icon: Icon(FontAwesomeIcons.search),
+                onPressed: () {
+                  print('procurar');
+                }),
+          ],*/
+        ),
+        body: isLoading
+            ? Container(
+                height: MediaQuery.of(context).size.height,
+                color: Colors.black,
+                child: Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                      valueColor: AlwaysStoppedAnimation(Colors.red[900]),
+                    ),
+                    height: 40,
+                    width: 40,
                   ),
-                  height: 40,
-                  width: 40,
                 ),
+              )
+            : Stack(
+                children: <Widget>[
+                  _buildGoogleMap(context),
+                  _floatButtomMapa(),
+                  // _buildContainer(),
+                ],
               ),
-            )
-          : Stack(
-              children: <Widget>[
-                _buildGoogleMap(context),
-                _floatButtomMapa(),
-                // _buildContainer(),
-              ],
-            ),
+      ),
     );
   }
 
