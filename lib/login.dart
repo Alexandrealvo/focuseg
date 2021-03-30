@@ -70,8 +70,6 @@ class _LoginState extends State<Login> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String id = prefs.getString('idusu');
 
-    print('auth= $id');
-
     if (id != null) {
       bool isAuthenticated =
           await _localAuthentication.authenticateWithBiometrics(

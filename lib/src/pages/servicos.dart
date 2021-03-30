@@ -6,8 +6,11 @@ import 'package:focus/src/components/api_servicos.dart';
 import 'package:focus/src/components/mapa_servicos.dart';
 import 'package:focus/src/components/utils/box_search.dart';
 import 'package:focus/src/pages/calendario.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:focus/src/pages/info_servicos.dart';
 
 class Servicos extends StatefulWidget {
   @override
@@ -23,7 +26,7 @@ class _ServicosState extends State<Servicos> {
   //var servicos = new List<Dados_Servicos>();
   List<Dados_Servicos> servicos = <Dados_Servicos>[];
   bool isLoading = true;
-
+  bool isSearching = false;
   var cor_drawer = Colors.yellow[300];
 
   showAlertDialog(BuildContext context, String data, String time, String idServ,
@@ -73,16 +76,28 @@ class _ServicosState extends State<Servicos> {
     }));
   }
 
+  void _abrir_page_info(idOs) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('idOs', idOs);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Info_Servicos();
+    }));
+  }
+
   void _configurandoModalBottomSheet(
-      context,
-      String nome_cliente,
-      String endereco,
-      String tipos,
-      String idProf,
-      String status,
-      String idServ,
-      String idos,
-      String dt_agenda) {
+    context,
+    String nome_cliente,
+    String endereco,
+    String tipos,
+    String idProf,
+    String status,
+    String idServ,
+    String idos,
+    String dt_agenda,
+    String info_checkin,
+    String info_checkout,
+  ) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
@@ -116,7 +131,8 @@ class _ServicosState extends State<Servicos> {
                       ? Text(tipos)
                       : Text("${dt_agenda}h\n$tipos"),
                 ),
-                status == "Finalizada"
+                status == "Finalizada" &&
+                        (info_checkin != "1" || info_checkout != "1")
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
@@ -137,8 +153,8 @@ class _ServicosState extends State<Servicos> {
                           ),
                         ),
                       )
-                    : status == "Aceito Pendente" ||
-                            status == "Retorno Pendente"
+                    : status == "Finalizada" &&
+                            (info_checkin == "1" || info_checkout == "1")
                         ? Column(
                             children: [
                               Padding(
@@ -146,50 +162,19 @@ class _ServicosState extends State<Servicos> {
                                 child: Container(
                                   width: MediaQuery.of(context).size.width,
                                   height: 50,
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      final selectedDate =
-                                          await _selectDateTime(context);
-                                      if (selectedDate == null) return;
-
-                                      final selectedTime =
-                                          await _selectTime(context);
-                                      if (selectedTime == null) return;
-
-                                      setState(() {
-                                        this.selectedDate = DateTime(
-                                          selectedDate.year,
-                                          selectedDate.month,
-                                          selectedDate.day,
-                                          selectedTime.hour,
-                                          selectedTime.minute,
-                                        );
-
-                                        Navigator.of(context).pop();
-                                        showAlertDialog(
-                                            context,
-                                            dateFormat.format(selectedDate),
-                                            '${selectedTime.hour}:${selectedTime.minute}',
-                                            idServ,
-                                            status,
-                                            idos);
-                                      });
+                                  child: RaisedButton(
+                                    onPressed: () {
+                                      _abrir_page_info(idos);
                                     },
+                                    shape: new RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(10)),
                                     child: Text(
-                                      "Agendar",
+                                      "Info Check",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 18),
                                     ),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Colors.green,
-                                      onSurface: Colors.black12,
-                                      shadowColor: Colors.black,
-                                      elevation: 5,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
-                                    ),
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -198,174 +183,250 @@ class _ServicosState extends State<Servicos> {
                                 child: Container(
                                   width: MediaQuery.of(context).size.width,
                                   height: 50,
-                                  child: TextButton(
+                                  child: RaisedButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
+                                    shape: new RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(10)),
                                     child: Text(
                                       "Cancelar",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 18),
                                     ),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Colors.blueGrey,
-                                      onSurface: Colors.black12,
-                                      shadowColor: Colors.black,
-                                      elevation: 5,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
-                                    ),
+                                    color: Colors.blueGrey,
                                   ),
                                 ),
                               )
                             ],
                           )
-                        : Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50,
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      final selectedDate =
-                                          await _selectDateTime(context);
-                                      if (selectedDate == null) return;
+                        : status == "Aceito Pendente" ||
+                                status == "Retorno Pendente"
+                            ? Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: TextButton(
+                                        onPressed: () async {
+                                          final selectedTime =
+                                              await _selectTime(context);
+                                          if (selectedTime == null) return;
 
-                                      final selectedTime =
-                                          await _selectTime(context);
-                                      if (selectedTime == null) return;
+                                          setState(() {
+                                            this.selectedDate = DateTime(
+                                              selectedDate.year,
+                                              selectedDate.month,
+                                              selectedDate.day,
+                                              selectedTime.hour,
+                                              selectedTime.minute,
+                                            );
 
-                                      setState(() {
-                                        this.selectedDate = DateTime(
-                                          selectedDate.year,
-                                          selectedDate.month,
-                                          selectedDate.day,
-                                          selectedTime.hour,
-                                          selectedTime.minute,
-                                        );
-
-                                        Navigator.of(context).pop();
-                                        showAlertDialog(
-                                            context,
-                                            dateFormat.format(selectedDate),
-                                            '${selectedTime.hour}:${selectedTime.minute}',
-                                            idServ,
-                                            status,
-                                            idos);
-                                      });
-                                    },
-                                    child: isLoading
-                                        ? SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      Colors.white),
-                                            ),
-                                          )
-                                        : Text(
-                                            "Reagendar",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18),
-                                          ),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Colors.green,
-                                      onSurface: Colors.black12,
-                                      shadowColor: Colors.black,
-                                      elevation: 5,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
+                                            Navigator.of(context).pop();
+                                            showAlertDialog(
+                                                context,
+                                                dateFormat.format(selectedDate),
+                                                '${selectedTime.hour}:${selectedTime.minute}',
+                                                idServ,
+                                                status,
+                                                idos);
+                                          });
+                                        },
+                                        child: Text(
+                                          "Agendar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.green,
+                                          onSurface: Colors.black12,
+                                          shadowColor: Colors.black,
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      _abrir_agenda();
-                                    },
-                                    child: isLoading
-                                        ? SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      Colors.white),
-                                            ),
-                                          )
-                                        : Text(
-                                            "Agenda",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18),
-                                          ),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Colors.red[400],
-                                      onSurface: Colors.black12,
-                                      shadowColor: Colors.black,
-                                      elevation: 5,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          "Cancelar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.blueGrey,
+                                          onSurface: Colors.black12,
+                                          shadowColor: Colors.black,
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: isLoading
-                                        ? SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      Colors.white),
-                                            ),
-                                          )
-                                        : Text(
-                                            "Cancelar",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18),
-                                          ),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Colors.blueGrey,
-                                      onSurface: Colors.black12,
-                                      shadowColor: Colors.black,
-                                      elevation: 5,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
-                                    ),
-                                  ),
-                                ),
+                                  )
+                                ],
                               )
-                            ],
-                          ),
+                            : Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: TextButton(
+                                        onPressed: () async {
+                                          final selectedTime =
+                                              await _selectTime(context);
+                                          if (selectedTime == null) return;
+
+                                          setState(() {
+                                            this.selectedDate = DateTime(
+                                              selectedDate.year,
+                                              selectedDate.month,
+                                              selectedDate.day,
+                                              selectedTime.hour,
+                                              selectedTime.minute,
+                                            );
+
+                                            Navigator.of(context).pop();
+                                            showAlertDialog(
+                                                context,
+                                                dateFormat.format(selectedDate),
+                                                '${selectedTime.hour}:${selectedTime.minute}',
+                                                idServ,
+                                                status,
+                                                idos);
+                                          });
+                                        },
+                                        child: isLoading
+                                            ? SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation(
+                                                          Colors.white),
+                                                ),
+                                              )
+                                            : Text(
+                                                "Reagendar",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.green,
+                                          onSurface: Colors.black12,
+                                          shadowColor: Colors.black,
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          _abrir_agenda();
+                                        },
+                                        child: isLoading
+                                            ? SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation(
+                                                          Colors.white),
+                                                ),
+                                              )
+                                            : Text(
+                                                "Agenda",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.red[400],
+                                          onSurface: Colors.black12,
+                                          shadowColor: Colors.black,
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 50,
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: isLoading
+                                            ? SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation(
+                                                          Colors.white),
+                                                ),
+                                              )
+                                            : Text(
+                                                "Cancelar",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
+                                              ),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.blueGrey,
+                                          onSurface: Colors.black12,
+                                          shadowColor: Colors.black,
+                                          elevation: 5,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
               ],
             ),
           );
@@ -442,6 +503,15 @@ class _ServicosState extends State<Servicos> {
         centerTitle: true,
         backgroundColor: Colors.red[900],
         elevation: 0,
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(FontAwesomeIcons.search),
+              onPressed: () {
+                setState(() {
+                  isSearching = !isSearching;
+                });
+              }),
+        ],
       ),
       body: isLoading
           ? Container(
@@ -458,12 +528,12 @@ class _ServicosState extends State<Servicos> {
                 ),
               ),
             )
-          : Column(
-              children: [
-                boxSearch(context, search, onSearchTextChanged),
-                Expanded(
-                  child: _listaServicos(),
-                )
+          : Stack(
+              children: <Widget>[
+                _listaServicos(),
+                isSearching
+                    ? boxSearch(context, search, onSearchTextChanged)
+                    : Container(),
               ],
             ),
     );
@@ -535,7 +605,16 @@ class _ServicosState extends State<Servicos> {
                                           : searchResult[index].status ==
                                                   'Agendado | Re-visita'
                                               ? Colors.blue
-                                              : Colors.green,
+                                              : searchResult[index].status ==
+                                                          'Finalizada' &&
+                                                      (searchResult[index]
+                                                                  .info_checkin ==
+                                                              "1" ||
+                                                          searchResult[index]
+                                                                  .info_checkout ==
+                                                              "1")
+                                                  ? Colors.blueGrey
+                                                  : Colors.green,
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         onTap: () {
@@ -549,6 +628,8 @@ class _ServicosState extends State<Servicos> {
                             searchResult[index].idServ,
                             searchResult[index].idos,
                             searchResult[index].dt_agenda,
+                            searchResult[index].info_checkin,
+                            searchResult[index].info_checkout,
                           );
                         },
                         leading: Icon(Icons.build_circle_outlined,
@@ -592,7 +673,16 @@ class _ServicosState extends State<Servicos> {
                                           : servicos[index].status ==
                                                   'Agendado | Re-visita'
                                               ? Colors.blue
-                                              : Colors.green,
+                                              : servicos[index].status ==
+                                                          'Finalizada' &&
+                                                      (servicos[index]
+                                                                  .info_checkin ==
+                                                              "1" ||
+                                                          servicos[index]
+                                                                  .info_checkout ==
+                                                              "1")
+                                                  ? Colors.blueGrey
+                                                  : Colors.green,
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         onTap: () {
@@ -606,24 +696,25 @@ class _ServicosState extends State<Servicos> {
                             servicos[index].idServ,
                             servicos[index].idos,
                             servicos[index].dt_agenda,
+                            servicos[index].info_checkin,
+                            servicos[index].info_checkout,
                           );
                         },
                         leading: Icon(Icons.build_circle_outlined,
                             size: 32, color: Colors.red[900]),
                         title: Text(servicos[index].nome_cliente,
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.black54)),
-                        trailing: Text("OS " + servicos[index].idos,
                             style: TextStyle(
                                 fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500)),
+                        trailing: Text("OS " + servicos[index].idos,
+                            style: TextStyle(
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black54)),
+                                color: Colors.black)),
                         subtitle: Text(
                           servicos[index].data_create,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black26),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ),
                     );
@@ -641,10 +732,3 @@ Future<TimeOfDay> _selectTime(BuildContext context) {
     initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
   );
 }
-
-Future<DateTime> _selectDateTime(BuildContext context) => showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(Duration(seconds: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );

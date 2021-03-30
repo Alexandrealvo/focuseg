@@ -7,7 +7,10 @@ import 'package:focus/src/components/mapa_info_serv.dart';
 import 'package:focus/src/components/api.info_servico.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'home_page.dart';
 
 class Info_Servicos extends StatefulWidget {
   @override
@@ -20,11 +23,83 @@ class _Info_ServicosState extends State<Info_Servicos> {
   bool isForm = true;
   final _formulario = GlobalKey<FormState>();
   TextEditingController obs = new TextEditingController();
+
+  DateTime selectedDate = DateTime.now();
+  final DateFormat timeFormat = DateFormat('HH:mm');
+
   List<Dados_Info_Serv> info = <Dados_Info_Serv>[];
   File _selectedFile;
   final uri = Uri.parse("https://focuseg.com.br/flutter/upload_imagem_obs.php");
   bool boxText = false;
   bool boxImg = true;
+
+  Future _agendar(
+      String time, String ctlcheck, String idos, String idServ) async {
+    final response = await http
+        .post(Uri.https("www.focuseg.com.br", '/flutter/infoCheck.php'), body: {
+      "time": time,
+      "ctlcheck": ctlcheck,
+      "idos": idos,
+      "idServ": idServ
+    });
+
+    var dados = json.decode(response.body);
+
+    if (dados['valida'] == 1) {
+      setState(() {
+        _getInfoServ();
+      });
+    } else {
+      EdgeAlert.show(context,
+          title: 'Erro! Tente novamente.',
+          gravity: EdgeAlert.BOTTOM,
+          backgroundColor: Colors.red,
+          icon: Icons.highlight_off);
+    }
+  }
+
+  showAlertDialog(BuildContext context, String time, String ctlcheck,
+      String idos, String idServ) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text(
+        "Cancelar",
+        style: TextStyle(fontSize: 20),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text(
+        "Confirmar ",
+        style: TextStyle(fontSize: 20, color: Colors.red),
+      ),
+      onPressed: () {
+        _agendar(time, ctlcheck, idos, idServ);
+        Navigator.of(context).pop();
+        //print('teste');
+      },
+    );
+    // set up the AlertDialog
+
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.blueGrey[12],
+      title: Text("Confirma Info-Check para ${time}h?"),
+      //content: Text("Para: ${time}h"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   _getInfoServ() {
     API_INFO_SERV.getInfoServ().then((response) {
@@ -127,6 +202,11 @@ class _Info_ServicosState extends State<Info_Servicos> {
     _getInfoServ();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void _configurandoModalBottomSheet(context) {
     showModalBottomSheet(
         context: context,
@@ -196,33 +276,64 @@ class _Info_ServicosState extends State<Info_Servicos> {
         });
   }
 
+  Future _backPressed() async {
+    /*final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String nome = prefs.getString('nome');
+    final String tipo = prefs.getString('tipo');
+    final String imgperfil = prefs.getString('imgperfil');
+    final String email = prefs.getString('email');
+    final String id = prefs.getString('idusu');
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => HomePage(id, nome, tipo, imgperfil, email)),
+        (Route<dynamic> route) => false);*/
+    print('ola');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Informação Serviço'),
-        centerTitle: true,
-        backgroundColor: Colors.red[900],
-      ),
-      resizeToAvoidBottomInset: true, //use
+    return WillPopScope(
+      onWillPop: () async {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String nome = prefs.getString('nome');
+        final String tipo = prefs.getString('tipo');
+        final String imgperfil = prefs.getString('imgperfil');
+        final String email = prefs.getString('email');
+        final String id = prefs.getString('idusu');
 
-      body: SingleChildScrollView(
-          child: isLoading
-              ? Container(
-                  height: MediaQuery.of(context).size.height,
-                  color: Colors.black,
-                  child: Center(
-                    child: SizedBox(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                        valueColor: AlwaysStoppedAnimation(Colors.red[900]),
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomePage(id, nome, tipo, imgperfil, email)),
+            (Route<dynamic> route) => false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Informação Serviço'),
+          centerTitle: true,
+          backgroundColor: Colors.red[900],
+        ),
+        resizeToAvoidBottomInset: true, //use
+
+        body: SingleChildScrollView(
+            child: isLoading
+                ? Container(
+                    height: MediaQuery.of(context).size.height,
+                    color: Colors.black,
+                    child: Center(
+                      child: SizedBox(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          valueColor: AlwaysStoppedAnimation(Colors.red[900]),
+                        ),
+                        height: 40,
+                        width: 40,
                       ),
-                      height: 40,
-                      width: 40,
                     ),
-                  ),
-                )
-              : main()),
+                  )
+                : main()),
+      ),
     );
   }
 
@@ -263,28 +374,129 @@ class _Info_ServicosState extends State<Info_Servicos> {
                             style: TextStyle(fontSize: 12, color: Colors.white),
                           ),
                         ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.arrow_left,
-                            color: Colors.red[400],
-                            size: 32,
-                          ),
-                          title: Text(
-                            '${info[index].checkin}h',
-                            style: TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.arrow_left,
-                            color: Colors.red[400],
-                            size: 32,
-                          ),
-                          title: Text(
-                            '${info[index].checkout}h',
-                            style: TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        ),
+                        info[index].checkin != "00/00/00 00:00"
+                            ? ListTile(
+                                leading: Icon(
+                                  Icons.arrow_left,
+                                  color: Colors.red[400],
+                                  size: 32,
+                                ),
+                                title: Text(
+                                  '${info[index].checkin}h',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              )
+                            : Container(
+                                child: ListTile(
+                                  leading: Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.red[400],
+                                    size: 32,
+                                  ),
+                                  title: TextButton(
+                                    onPressed: () async {
+                                      final selectedTime =
+                                          await _selectTime(context);
+                                      if (selectedTime == null) return;
+
+                                      setState(() {
+                                        this.selectedDate = DateTime(
+                                          selectedDate.year,
+                                          selectedDate.month,
+                                          selectedDate.day,
+                                          selectedTime.hour,
+                                          selectedTime.minute,
+                                        );
+                                      });
+
+                                      //Navigator.of(context).pop();
+                                      showAlertDialog(
+                                          context,
+                                          '${selectedTime.hour}:${selectedTime.minute}',
+                                          "1",
+                                          info[index].idos,
+                                          info[index].idServ);
+                                    },
+                                    child: Text(
+                                      "Entre com a data do Check-In",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.green,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        info[index].checkout != "00/00/00 00:00"
+                            ? ListTile(
+                                leading: Icon(
+                                  Icons.arrow_left,
+                                  color: Colors.red[400],
+                                  size: 32,
+                                ),
+                                title: Text(
+                                  '${info[index].checkout}h',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              )
+                            : Container(
+                                child: ListTile(
+                                  leading: Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.red[400],
+                                    size: 32,
+                                  ),
+                                  title: TextButton(
+                                    onPressed: () async {
+                                      final selectedTime =
+                                          await _selectTime(context);
+                                      if (selectedTime == null) return;
+
+                                      setState(() {
+                                        this.selectedDate = DateTime(
+                                          selectedDate.year,
+                                          selectedDate.month,
+                                          selectedDate.day,
+                                          selectedTime.hour,
+                                          selectedTime.minute,
+                                        );
+                                      });
+                                      // Navigator.of(context).pop();
+                                      showAlertDialog(
+                                          context,
+                                          '${selectedTime.hour}:${selectedTime.minute}',
+                                          "2",
+                                          info[index].idos,
+                                          info[index].idServ);
+                                    },
+                                    child: Text(
+                                      "Entre com a data do Check-Out",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Colors.green,
+                                      onSurface: Colors.black12,
+                                      shadowColor: Colors.black,
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                    ),
+                                  ),
+                                ),
+                              ),
 
                         info[index].obs != ""
                             ? Card(
@@ -510,3 +722,19 @@ class _Info_ServicosState extends State<Info_Servicos> {
     ]);
   }
 }
+
+Future<TimeOfDay> _selectTime(BuildContext context) {
+  final now = DateTime.now();
+
+  return showTimePicker(
+    context: context,
+    initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+  );
+}
+
+Future<DateTime> _selectDateTime(BuildContext context) => showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(seconds: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );

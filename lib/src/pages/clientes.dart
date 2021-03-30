@@ -21,6 +21,7 @@ class _ClientesState extends State<Clientes> {
 
   List<Dados_Clientes> clientes = <Dados_Clientes>[];
   bool isLoading = true;
+  bool isSearching = false;
 
   _getClientes() {
     API.getClientes().then((response) {
@@ -224,6 +225,15 @@ class _ClientesState extends State<Clientes> {
         centerTitle: true,
         backgroundColor: Colors.red[900],
         elevation: 0,
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(FontAwesomeIcons.search),
+              onPressed: () {
+                setState(() {
+                  isSearching = !isSearching;
+                });
+              }),
+        ],
       ),
       body: isLoading
           ? Container(
@@ -240,12 +250,12 @@ class _ClientesState extends State<Clientes> {
                 ),
               ),
             )
-          : Column(
-              children: [
-                boxSearch(context, search, onSearchTextChanged),
-                Expanded(
-                  child: _listaClientes(),
-                )
+          : Stack(
+              children: <Widget>[
+                _listaClientes(),
+                isSearching
+                    ? boxSearch(context, search, onSearchTextChanged)
+                    : Container(),
               ],
             ),
     );

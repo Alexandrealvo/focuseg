@@ -10,6 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:focus/src/pages/info_servicos.dart';
 
 //const url_check = "https://focuseg.com.br/flutter/check.php";
 
@@ -278,6 +280,15 @@ class MapaAgendaState extends State<MapaAgenda> {
     print('teste de pendencia idos=$idOS');
   }
 
+  void abrir_page_info(idOs) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('idOs', idOs);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Info_Servicos();
+    }));
+  }
+
   void _configurandoModalBottomSheet(context, LatLng latlng) {
     showModalBottomSheet(
         context: context,
@@ -306,32 +317,6 @@ class MapaAgendaState extends State<MapaAgenda> {
                                       fontSize: 18),
                                 ),
                                 subtitle: Text(mapa_agenda[index].endereco),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 50,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        "Observação",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 18),
-                                      ),
-                                      style: TextButton.styleFrom(
-                                        primary: Colors.white,
-                                        backgroundColor: Colors.indigo.shade900,
-                                        onSurface: Colors.black12,
-                                        shadowColor: Colors.black,
-                                        elevation: 5,
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10))),
-                                      ),
-                                    )),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -483,6 +468,34 @@ class MapaAgendaState extends State<MapaAgenda> {
                                                                     10))),
                                               ),
                                             ))),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 50,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        abrir_page_info(
+                                            mapa_agenda[index].idos);
+                                      },
+                                      child: Text(
+                                        "Info_Check",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 18),
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.white,
+                                        backgroundColor: Colors.black,
+                                        onSurface: Colors.black12,
+                                        shadowColor: Colors.black,
+                                        elevation: 5,
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                      ),
+                                    )),
+                              ),
                               mapa_agenda[index].ctlcheckin == "0"
                                   ? Padding(
                                       padding: const EdgeInsets.all(8.0),
