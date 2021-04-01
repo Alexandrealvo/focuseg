@@ -64,6 +64,7 @@ class _LoginState extends State<Login> {
   Future<void> _getListOfBiometricTypes() async {
     List<BiometricType> listOfBiometrics =
         await _localAuthentication.getAvailableBiometrics();
+    return listOfBiometrics;
   }
 
   Future<void> autoLogIn() async {
@@ -71,8 +72,7 @@ class _LoginState extends State<Login> {
     final String id = prefs.getString('idusu');
 
     if (id != null) {
-      bool isAuthenticated =
-          await _localAuthentication.authenticateWithBiometrics(
+      bool isAuthenticated = await _localAuthentication.authenticate(
         localizedReason: "Autenticar para realizar Login na plataforma",
         useErrorDialogs: true,
         stickyAuth: true,
