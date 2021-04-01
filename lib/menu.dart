@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
   @override
-  String _nome = "Alexandre";
-
   Widget build(BuildContext context) {
+    // String _nome = "Alexandre";
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

@@ -72,13 +72,13 @@ class _ServicosState extends State<Servicos> {
     );
   }
 
-  void _abrir_agenda() async {
+  void _abrirAgenda() async {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return Calendario();
     }));
   }
 
-  void _abrir_page_info(idOs) async {
+  void _abrirPageInfo(idOs) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('idOs', idOs);
 
@@ -166,7 +166,7 @@ class _ServicosState extends State<Servicos> {
                                   height: 50,
                                   child: RaisedButton(
                                     onPressed: () {
-                                      _abrir_page_info(idos);
+                                      _abrirPageInfo(idos);
                                     },
                                     shape: new RoundedRectangleBorder(
                                         borderRadius:
@@ -365,7 +365,7 @@ class _ServicosState extends State<Servicos> {
                                       child: TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
-                                          _abrir_agenda();
+                                          _abrirAgenda();
                                         },
                                         child: isLoading
                                             ? SizedBox(
@@ -444,7 +444,7 @@ class _ServicosState extends State<Servicos> {
         });
   }
 
-  Future<List> _agendar(String data, String time, String idServ, String status,
+  _agendar(String data, String time, String idServ, String status,
       String idos) async {
     final response = await http.post(
         Uri.https("www.focuseg.com.br", '/flutter/agendar_servicos.php'),
@@ -473,7 +473,7 @@ class _ServicosState extends State<Servicos> {
   }
 
   _getServicos() {
-    API_SERV.getServicos().then((response) {
+    ApiServ.getServicos().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
         servicos =

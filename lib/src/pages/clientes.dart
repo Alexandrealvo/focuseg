@@ -53,10 +53,10 @@ class _ClientesState extends State<Clientes> {
         .replaceAll("-", "")
         .replaceAll(" ", "");
 
-    var cel_final = "tel:$celular";
+    var celFinal = "tel:$celular";
 
-    if (await canLaunch(cel_final)) {
-      await launch(cel_final);
+    if (await canLaunch(celFinal)) {
+      await launch(celFinal);
     } else {
       EdgeAlert.show(context,
           title: 'Erro! Não foi possível ligar para este celular.',

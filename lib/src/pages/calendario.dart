@@ -20,14 +20,14 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
   bool isLoading = true;
-  List agenda = List<DadosAgenda>();
+  List<DadosAgenda> agenda = <DadosAgenda>[];
   // ApiCalendario calendario_api = new ApiCalendario();
 
   @override
   void initState() {
     super.initState();
 
-    final _selectedDay = DateTime.now();
+    // final _selectedDay = DateTime.now();
     _calendarController = CalendarController();
 
     //final _selectedDay = DateTime.now();
@@ -69,15 +69,15 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     });
   }
 
-  void _onVisibleDaysChanged(
-      DateTime first, DateTime last, CalendarFormat format) {
-    print('CALLBACK: _onVisibleDaysChanged');
-  }
+  // void _onVisibleDaysChanged(
+  //     DateTime first, DateTime last, CalendarFormat format) {
+  //   print('CALLBACK: _onVisibleDaysChanged');
+  // }
 
-  void _onCalendarCreated(
-      DateTime first, DateTime last, CalendarFormat format) {
-    print('CALLBACK: _onCalendarCreated');
-  }
+  // void _onCalendarCreated(
+  //     DateTime first, DateTime last, CalendarFormat format) {
+  //   print('CALLBACK: _onCalendarCreated');
+  // }
 
   Future getData() async {
     _events = {};
@@ -106,7 +106,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     });
   }
 
-  void _abrir_mapa(idOs) async {
+  void _abrirMapa(idOs) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('idOs', idOs);
 
@@ -115,7 +115,7 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
     }));
   }
 
-  void _abrir_page_info(idOs) async {
+  void _abrirPageInfo(idOs) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('idOs', idOs);
 
@@ -374,9 +374,9 @@ class _CalendarioState extends State<Calendario> with TickerProviderStateMixin {
                       var result = datajson.isAfter(hoje);
 
                       if (dtagenda == now && checkout[1].trim() == "0") {
-                        _abrir_mapa(idOs);
+                        _abrirMapa(idOs);
                       } else if (result == false) {
-                        _abrir_page_info(idOs);
+                        _abrirPageInfo(idOs);
                       } else {}
                     },
                   ),

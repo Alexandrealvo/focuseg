@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
-import 'dart:async';
 import 'dart:convert';
 
 class Senha extends StatefulWidget {
@@ -19,7 +18,7 @@ class _SenhaState extends State<Senha> {
   TextEditingController senha_nova = new TextEditingController();
   TextEditingController senha_confirma = new TextEditingController();
 
-  Future<List> _alterarsenha() async {
+  _alterarsenha() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idusu = prefs.getString('idusu');
 
@@ -100,7 +99,7 @@ class _SenhaState extends State<Senha> {
                             child: Container(
                               //color: Color(0xfff5f5f5),
                               child: TextFormField(
-                                autovalidate: true,
+                                autovalidateMode: AutovalidateMode.always,
                                 controller: senha_nova,
                                 validator: (val) {
                                   if (val.isEmpty) return 'Campo Vazio!';
@@ -134,7 +133,7 @@ class _SenhaState extends State<Senha> {
                             child: Container(
                               //color: Color(0xfff5f5f5),
                               child: TextFormField(
-                                autovalidate: true,
+                                autovalidateMode: AutovalidateMode.always,
                                 controller: senha_confirma,
                                 validator: (val) {
                                   if (val.isEmpty) return 'Campo Vazio!';

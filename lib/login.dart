@@ -123,7 +123,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<List> _login() async {
+  _login() async {
     final response = await http.post(
         Uri.https("www.focuseg.com.br", '/flutter/login_json.php'),
         body: {
@@ -131,19 +131,19 @@ class _LoginState extends State<Login> {
           "senha": senha.text,
         });
 
-    var dados_usuario = json.decode(response.body);
+    var dadosUsuario = json.decode(response.body);
 
-    if (dados_usuario['valida'] == 1) {
+    if (dadosUsuario['valida'] == 1) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       OneSignal.shared.sendTags(
-          {"nome": dados_usuario['nome'], "idusu": dados_usuario['idusu']});
+          {"nome": dadosUsuario['nome'], "idusu": dadosUsuario['idusu']});
 
-      prefs.setString('idusu', dados_usuario['idusu']);
-      prefs.setString('nome', dados_usuario['nome']);
-      prefs.setString('tipo', dados_usuario['tipo']);
-      prefs.setString('email', dados_usuario['email']);
-      prefs.setString('imgperfil', dados_usuario['imgperfil']);
+      prefs.setString('idusu', dadosUsuario['idusu']);
+      prefs.setString('nome', dadosUsuario['nome']);
+      prefs.setString('tipo', dadosUsuario['tipo']);
+      prefs.setString('email', dadosUsuario['email']);
+      prefs.setString('imgperfil', dadosUsuario['imgperfil']);
 
       setState(() {
         isLoggedIn = true;
@@ -251,8 +251,8 @@ class _LoginState extends State<Login> {
                                     labelStyle: TextStyle(
                                         color: Colors.white, fontSize: 16)),
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (value_email) {
-                                  if (!EmailValidator.validate(value_email)) {
+                                validator: (value) {
+                                  if (!EmailValidator.validate(value)) {
                                     return 'Entre com e-mail válido!';
                                   }
                                 },
@@ -285,8 +285,8 @@ class _LoginState extends State<Login> {
                                         color: Colors.white),
                                     labelStyle: TextStyle(
                                         color: Colors.white, fontSize: 16)),
-                                validator: (value_senha) {
-                                  if (value_senha.isEmpty) {
+                                validator: (value) {
+                                  if (value.isEmpty) {
                                     return 'Campo senha vazio!';
                                   }
                                   return null;
@@ -298,25 +298,37 @@ class _LoginState extends State<Login> {
                           Padding(
                             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                             child: ButtonTheme(
-                              height: 50.0,
-                              child: RaisedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  _login();
-                                },
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(10.0)),
-                                child: Text(
-                                  "Entrar",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                color: Colors.red[900],
-                              ),
-                            ),
+                                height: 50.0,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    _login();
+                                  },
+                                  child: Text(
+                                    "Entrar",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.resolveWith<
+                                        OutlinedBorder>(
+                                      (states) {
+                                        return RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(
+                                                    10.0));
+                                      },
+                                    ),
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (states) {
+                                        return Colors.red[900];
+                                      },
+                                    ),
+                                  ),
+                                )),
                           ),
                           new Padding(
                             padding: EdgeInsets.fromLTRB(0, 10, 0, 30),
