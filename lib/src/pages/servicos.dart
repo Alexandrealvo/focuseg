@@ -214,6 +214,10 @@ class _ServicosState extends State<Servicos> {
                                       height: 50,
                                       child: TextButton(
                                         onPressed: () async {
+                                          final selectedDate =
+                                              await _selectDateTime(context);
+                                          if (selectedDate == null) return;
+
                                           final selectedTime =
                                               await _selectTime(context);
                                           if (selectedTime == null) return;
@@ -295,6 +299,10 @@ class _ServicosState extends State<Servicos> {
                                       height: 50,
                                       child: TextButton(
                                         onPressed: () async {
+                                          final selectedDate =
+                                              await _selectDateTime(context);
+                                          if (selectedDate == null) return;
+
                                           final selectedTime =
                                               await _selectTime(context);
                                           if (selectedTime == null) return;
@@ -310,12 +318,13 @@ class _ServicosState extends State<Servicos> {
 
                                             Navigator.of(context).pop();
                                             showAlertDialog(
-                                                context,
-                                                dateFormat.format(selectedDate),
-                                                '${selectedTime.hour}:${selectedTime.minute}',
-                                                idServ,
-                                                status,
-                                                idos);
+                                              context,
+                                              dateFormat.format(selectedDate),
+                                              '${selectedTime.hour}:${selectedTime.minute}',
+                                              idServ,
+                                              status,
+                                              idos,
+                                            );
                                           });
                                         },
                                         child: isLoading
@@ -754,3 +763,10 @@ Future<TimeOfDay> _selectTime(BuildContext context) {
     initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
   );
 }
+
+Future<DateTime> _selectDateTime(BuildContext context) => showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(seconds: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
