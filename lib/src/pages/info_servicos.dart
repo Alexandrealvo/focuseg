@@ -102,7 +102,7 @@ class _Info_ServicosState extends State<Info_Servicos> {
   }
 
   _getInfoServ() {
-    API_INFO_SERV.getInfoServ().then((response) {
+    ApiInfoServ.getInfoServ().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
         info = lista.map((model) => Dados_Info_Serv.fromJson(model)).toList();
@@ -276,20 +276,20 @@ class _Info_ServicosState extends State<Info_Servicos> {
         });
   }
 
-  Future _backPressed() async {
-    /*final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String nome = prefs.getString('nome');
-    final String tipo = prefs.getString('tipo');
-    final String imgperfil = prefs.getString('imgperfil');
-    final String email = prefs.getString('email');
-    final String id = prefs.getString('idusu');
+  // Future _backPressed() async {
+  //   /*final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final String nome = prefs.getString('nome');
+  //   final String tipo = prefs.getString('tipo');
+  //   final String imgperfil = prefs.getString('imgperfil');
+  //   final String email = prefs.getString('email');
+  //   final String id = prefs.getString('idusu');
 
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (context) => HomePage(id, nome, tipo, imgperfil, email)),
-        (Route<dynamic> route) => false);*/
-    print('ola');
-  }
+  //   Navigator.of(context).pushAndRemoveUntil(
+  //       MaterialPageRoute(
+  //           builder: (context) => HomePage(id, nome, tipo, imgperfil, email)),
+  //       (Route<dynamic> route) => false);*/
+  //   print('ola');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -731,10 +731,3 @@ Future<TimeOfDay> _selectTime(BuildContext context) {
     initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
   );
 }
-
-Future<DateTime> _selectDateTime(BuildContext context) => showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(Duration(seconds: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );

@@ -204,7 +204,7 @@ class _TarefasState extends State<Tarefas> {
     return file.writeAsString(data);
   }
 
-  Future<String> readData() async {
+  readData() async {
     try {
       final file = await getFile();
 

@@ -19,6 +19,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     OneSignal.shared.init("2cffbe8e-b022-4b1a-84b2-571b54662f4b");
+    OneSignal.shared
+        .setInFocusDisplayType(OSNotificationDisplayType.notification);
 
     return MaterialApp(
       localizationsDelegates: [

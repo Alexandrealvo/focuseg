@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:focus/src/components/api.mapa_agenda.dart';
 import 'package:focus/src/components/mapa_mapagenda.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -31,10 +29,10 @@ class MapaAgenda extends StatefulWidget {
 
 class MapaAgendaState extends State<MapaAgenda> {
   Completer<GoogleMapController> _controller = Completer();
-  //List mapa_agenda = new List<DadosAgenda>();
-  List<DadosAgenda> mapa_agenda = <DadosAgenda>[];
+  //List mapaAgenda = new List<DadosAgenda>();
+  List<DadosAgenda> mapaAgenda = <DadosAgenda>[];
   bool isLoading = true;
-  final mapa_array = [];
+  final mapaArray = [];
   String nomecliente;
   String endereco;
   Position currentPosition;
@@ -75,12 +73,11 @@ class MapaAgendaState extends State<MapaAgenda> {
   }
 
   _getMapaAgenda() {
-    API_MAPA_AGENDA.getMapaAgenda().then((response) {
+    ApiMapaAgenda.getMapaAgenda().then((response) {
       setState(() {
         Iterable lista = json.decode(response.body);
 
-        mapa_agenda =
-            lista.map((model) => DadosAgenda.fromJson(model)).toList();
+        mapaAgenda = lista.map((model) => DadosAgenda.fromJson(model)).toList();
         isLoading = false;
       });
     });
@@ -326,7 +323,7 @@ class MapaAgendaState extends State<MapaAgenda> {
     print('teste de pendencia idos=$idOS');
   }
 
-  void abrir_page_info(idOs) async {
+  void abrirPageInfo(idOs) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('idOs', idOs);
 
@@ -342,12 +339,12 @@ class MapaAgendaState extends State<MapaAgenda> {
           return Container(
             height: MediaQuery.of(context).size.height / 2.5,
             child: ListView.builder(
-                itemCount: mapa_agenda.length,
+                itemCount: mapaAgenda.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: EdgeInsets.all(15),
-                    child: mapa_agenda[index].ctlcheckin == "1" &&
-                            mapa_agenda[index].ctlcheckout == "1"
+                    child: mapaAgenda[index].ctlcheckin == "1" &&
+                            mapaAgenda[index].ctlcheckout == "1"
                         ? Wrap(
                             children: <Widget>[
                               ListTile(
@@ -357,12 +354,12 @@ class MapaAgendaState extends State<MapaAgenda> {
                                   size: 40,
                                 ),
                                 title: Text(
-                                  mapa_agenda[index].cliente,
+                                  mapaAgenda[index].cliente,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18),
                                 ),
-                                subtitle: Text(mapa_agenda[index].endereco),
+                                subtitle: Text(mapaAgenda[index].endereco),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -371,7 +368,7 @@ class MapaAgendaState extends State<MapaAgenda> {
                                   height: 50,
                                   child: TextButton(
                                     onPressed: () {
-                                      _pendente(mapa_agenda[index].idos);
+                                      _pendente(mapaAgenda[index].idos);
                                       Navigator.of(context).pop();
                                     },
                                     child: Text(
@@ -430,30 +427,29 @@ class MapaAgendaState extends State<MapaAgenda> {
                                   size: 40,
                                 ),
                                 title: Text(
-                                  mapa_agenda[index].cliente,
+                                  mapaAgenda[index].cliente,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18),
                                 ),
-                                subtitle: Text(mapa_agenda[index].endereco),
+                                subtitle: Text(mapaAgenda[index].endereco),
                               ),
                               Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
                                       width: MediaQuery.of(context).size.width,
                                       height: 50,
-                                      child: mapa_agenda[index].ctlcheckin ==
-                                              "1"
+                                      child: mapaAgenda[index].ctlcheckin == "1"
                                           ? TextButton(
                                               onPressed: () {
                                                 _check(
                                                     latlng.latitude.toString(),
                                                     latlng.longitude.toString(),
-                                                    mapa_agenda[index].idos,
-                                                    mapa_agenda[index]
+                                                    mapaAgenda[index].idos,
+                                                    mapaAgenda[index]
                                                         .ctlcheckin,
-                                                    mapa_agenda[index].lat,
-                                                    mapa_agenda[index].lng);
+                                                    mapaAgenda[index].lat,
+                                                    mapaAgenda[index].lng);
                                                 Navigator.of(context).pop();
                                               },
                                               /*shape: new RoundedRectangleBorder(
@@ -486,11 +482,11 @@ class MapaAgendaState extends State<MapaAgenda> {
                                                 _check(
                                                     latlng.latitude.toString(),
                                                     latlng.longitude.toString(),
-                                                    mapa_agenda[index].idos,
-                                                    mapa_agenda[index]
+                                                    mapaAgenda[index].idos,
+                                                    mapaAgenda[index]
                                                         .ctlcheckin,
-                                                    mapa_agenda[index].lat,
-                                                    mapa_agenda[index].lng);
+                                                    mapaAgenda[index].lat,
+                                                    mapaAgenda[index].lng);
                                                 Navigator.of(context).pop();
                                               },
                                               child: Text(
@@ -522,8 +518,7 @@ class MapaAgendaState extends State<MapaAgenda> {
                                     child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
-                                        abrir_page_info(
-                                            mapa_agenda[index].idos);
+                                        abrirPageInfo(mapaAgenda[index].idos);
                                       },
                                       child: Text(
                                         "Info_Check",
@@ -542,7 +537,7 @@ class MapaAgendaState extends State<MapaAgenda> {
                                       ),
                                     )),
                               ),
-                              mapa_agenda[index].ctlcheckin == "0"
+                              mapaAgenda[index].ctlcheckin == "0"
                                   ? Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Container(
@@ -553,7 +548,7 @@ class MapaAgendaState extends State<MapaAgenda> {
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                             showAlertDialog(
-                                                mapa_agenda[index].idos,
+                                                mapaAgenda[index].idos,
                                                 latlng.latitude.toString(),
                                                 latlng.longitude.toString());
                                           },
@@ -625,7 +620,7 @@ class MapaAgendaState extends State<MapaAgenda> {
 
   Widget _buildGoogleMap(BuildContext context) {
     return ListView.builder(
-        itemCount: mapa_agenda.length,
+        itemCount: mapaAgenda.length,
         itemBuilder: (context, index) {
           return Container(
               height: MediaQuery.of(context).size.height,
@@ -648,8 +643,8 @@ class MapaAgendaState extends State<MapaAgenda> {
                   ),
                 ].toSet(),
                 initialCameraPosition: CameraPosition(
-                    target: LatLng(double.parse(mapa_agenda[index].lat),
-                        double.parse(mapa_agenda[index].lng)),
+                    target: LatLng(double.parse(mapaAgenda[index].lat),
+                        double.parse(mapaAgenda[index].lng)),
                     zoom: 17),
                 onMapCreated: (GoogleMapController controller) async {
                   if (!_controller.isCompleted) {
@@ -671,8 +666,8 @@ class MapaAgendaState extends State<MapaAgenda> {
                       LatLng(position.latitude, position.longitude);
 
                   LatLng latLatCliente = LatLng(
-                      double.parse(mapa_agenda[index].lat),
-                      double.parse(mapa_agenda[index].lng));
+                      double.parse(mapaAgenda[index].lat),
+                      double.parse(mapaAgenda[index].lng));
 
                   //condição para o reposicionamemto
                   if (latLatPosition.latitude <= latLatCliente.latitude) {
@@ -697,7 +692,7 @@ class MapaAgendaState extends State<MapaAgenda> {
                   //final imagePath = "images/logo.png";
 
                   /* final imageURL =
-                      'https://www.focuseg.com.br/areadm/downloads/fotosprofissionais/${mapa_agenda[index].imgperfil}';
+                      'https://www.focuseg.com.br/areadm/downloads/fotosprofissionais/${mapaAgenda[index].imgperfil}';
 
                   final File markerImageFile =
                       await DefaultCacheManager().getSingleFile(imageURL);
@@ -835,20 +830,20 @@ class MapaAgendaState extends State<MapaAgenda> {
                   if (this.mounted) {
                     // check whether the state object is in tree
                     setState(() {
-                      mapa_agenda[index].ctlcheckin == "0"
+                      mapaAgenda[index].ctlcheckin == "0"
                           ? cor = Colors.yellow.withOpacity(0.3)
-                          : (mapa_agenda[index].ctlcheckin == "1" &&
-                                  mapa_agenda[index].ctlcheckout == "0")
+                          : (mapaAgenda[index].ctlcheckin == "1" &&
+                                  mapaAgenda[index].ctlcheckout == "0")
                               ? cor = Colors.red[900].withOpacity(0.3)
                               : cor = Colors.green.withOpacity(0.3);
 
                       _markers.add(Marker(
-                          markerId: MarkerId(mapa_agenda[index].cliente),
-                          position: LatLng(double.parse(mapa_agenda[index].lat),
-                              double.parse(mapa_agenda[index].lng)),
+                          markerId: MarkerId(mapaAgenda[index].cliente),
+                          position: LatLng(double.parse(mapaAgenda[index].lat),
+                              double.parse(mapaAgenda[index].lng)),
                           infoWindow: InfoWindow(
-                            title: mapa_agenda[index].cliente,
-                            snippet: mapa_agenda[index].endereco,
+                            title: mapaAgenda[index].cliente,
+                            snippet: mapaAgenda[index].endereco,
                           ),
                           icon: BitmapDescriptor.defaultMarkerWithHue(
                             BitmapDescriptor.hueViolet,
@@ -874,8 +869,8 @@ class MapaAgendaState extends State<MapaAgenda> {
                 circles: Set.from([
                   Circle(
                     circleId: CircleId('circle'),
-                    center: LatLng(double.parse(mapa_agenda[index].lat),
-                        double.parse(mapa_agenda[index].lng)),
+                    center: LatLng(double.parse(mapaAgenda[index].lat),
+                        double.parse(mapaAgenda[index].lng)),
                     radius: 80,
                     strokeColor: cor,
                     fillColor: cor,

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //const url_api = "https://focuseg.com.br/flutter/chamadas_json.php?idProf=";
 
-class API_INFO_SERV {
+class ApiInfoServ {
   static Future getInfoServ() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String idOs = prefs.getString('idOs');
