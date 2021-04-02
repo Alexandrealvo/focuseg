@@ -8,6 +8,7 @@ import 'package:focus/src/components/mapa_clientes.dart';
 import 'package:focus/src/components/utils/box_search.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
 
 import '../components/mapa_clientes.dart';
 
@@ -74,15 +75,19 @@ class _ClientesState extends State<Clientes> {
         .replaceAll(" ", "")
         .replaceAll("+", "");
 
-    var url = "https://api.whatsapp.com/send?phone=55${celular}_blank";
+    //var url = "https://api.whatsapp.com/send?phone=55${celular}_blank";
 
-    if (await canLaunch(url)) {
-      await launch(
+    FlutterOpenWhatsapp.sendSingleMessage("55$celular", "");
+
+    /*if (await send(celular, 'hello')) {
+      
+      /*await launch(
         url,
         forceSafariVC: false,
         forceWebView: true,
         enableJavaScript: true,
-      );
+      );*/
+
     } else {
       EdgeAlert.show(context,
           title:
@@ -90,7 +95,7 @@ class _ClientesState extends State<Clientes> {
           gravity: EdgeAlert.BOTTOM,
           backgroundColor: Colors.red,
           icon: Icons.highlight_off);
-    }
+    }*/
   }
 
   var search = TextEditingController();

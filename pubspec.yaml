@@ -1,5 +1,5 @@
 name: focus
-description: A new Flutter application.
+description: Aplicativo para controle dos profissionais.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.0.2
   whatsapp_unilink: ^1.0.0+1
   flutter_cache_manager: ^3.0.1
+  flutter_open_whatsapp: ^0.1.2
 
 dev_dependencies:
   flutter_test:
