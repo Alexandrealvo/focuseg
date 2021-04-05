@@ -9,6 +9,7 @@ class DadosAgenda {
   String ctlcheckin;
   String ctlcheckout;
   String imgperfil;
+  String checkin;
 
   DadosAgenda(
       String idos,
@@ -20,7 +21,8 @@ class DadosAgenda {
       String status,
       String ctlcheckin,
       String ctlcheckout,
-      String imgperfil) {
+      String imgperfil,
+      String checkin) {
     this.idos = idos;
     this.cliente = cliente;
     this.endereco = endereco;
@@ -31,6 +33,7 @@ class DadosAgenda {
     this.ctlcheckin = ctlcheckin;
     this.ctlcheckout = ctlcheckout;
     this.imgperfil = imgperfil;
+    this.checkin = checkin;
   }
   DadosAgenda.fromJson(Map json)
       : idos = json['idos'],
@@ -42,5 +45,6 @@ class DadosAgenda {
         status = json['status'],
         ctlcheckin = json['ctlcheckin'],
         ctlcheckout = json['ctlcheckout'],
-        imgperfil = json['imgperfil'];
+        imgperfil = json['imgperfil'],
+        checkin = json['checkin'];
 }

@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:focus/src/pages/info_servicos.dart';
 
@@ -40,6 +41,50 @@ class MapaAgendaState extends State<MapaAgenda> {
   Set<Marker> _markers = {};
   double zoomVal = 12;
   Color cor = Colors.yellow.withOpacity(0.3);
+  String contador = "";
+  String tempoCheck = "";
+  bool isCheckin = false;
+
+  void _startTimer(String tempoCheck) {
+    print(tempoCheck);
+    Future.delayed(Duration(seconds: 1)).then((_) async {
+      final DateTime now = DateTime.now();
+      String tempo = now.toString();
+
+      var horaNow = int.parse(tempo.split(":")[0].split(" ")[1]);
+      var minNow = int.parse(tempo.split(" ")[1].split(":")[1]);
+      var segNow = int.parse(double.parse(tempo.split(" ")[1].split(":")[2])
+          .toStringAsPrecision(2));
+
+      // tempoCheck = "00:10:23";
+
+      var horaCheck = int.parse(tempoCheck.split(":")[0]);
+      var minCheck = int.parse(tempoCheck.split(":")[1]);
+      var segCheck = int.parse(tempoCheck.split(":")[2]);
+
+      Duration d =
+          Duration(hours: horaCheck, minutes: minCheck, seconds: segCheck);
+      Duration h = Duration(hours: horaNow, minutes: minNow, seconds: segNow);
+
+      int hourdiff = h.inHours - d.inHours;
+      int mindiff = h.inMinutes - d.inMinutes;
+      int segdiff = h.inSeconds - d.inSeconds;
+
+      int hour = hourdiff;
+      int remainderMinutes = mindiff.remainder(60);
+      int remainderSeconds = segdiff.remainder(60);
+
+      setState(() {
+        contador =
+            '${addZero(hour)}:${addZero(remainderMinutes)}:${addZero(remainderSeconds)}';
+      });
+      _startTimer(tempoCheck);
+    });
+  }
+
+  String addZero(int value) {
+    return value < 10 ? "0$value" : "$value";
+  }
 
   Set<Circle> circles = Set.from([
     Circle(
@@ -138,6 +183,9 @@ class MapaAgendaState extends State<MapaAgenda> {
                 children: <Widget>[
                   _buildGoogleMap(context),
                   _floatButtomMapa(),
+
+                  isCheckin == true ? _boxCronometro() : Container()
+
                   // _buildContainer(),
                 ],
               ),
@@ -164,6 +212,24 @@ class MapaAgendaState extends State<MapaAgenda> {
         tooltip: 'Call',
       ),
     );
+  }
+
+  Widget _boxCronometro() {
+    return Positioned(
+        top: 50,
+        left: 30,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$contador',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            )
+          ],
+        ));
   }
 
   void _timer() async {
@@ -252,8 +318,6 @@ class MapaAgendaState extends State<MapaAgenda> {
 
     var dados = json.decode(response.body);
 
-    print('teste de alteracao');
-
     if (dados['valida'] == 1) {
       EdgeAlert.show(context,
           title: 'GPS Alterado com Sucesso!',
@@ -290,6 +354,7 @@ class MapaAgendaState extends State<MapaAgenda> {
           backgroundColor: Colors.red,
           icon: Icons.check);
       setState(() {
+        isCheckin = true;
         cor = Colors.red[900].withOpacity(0.3);
         _getMapaAgenda();
       });
@@ -826,6 +891,17 @@ class MapaAgendaState extends State<MapaAgenda> {
 
                     return BitmapDescriptor.fromBytes(uint8List);
                   }*/
+
+                  if (mapaAgenda[index].ctlcheckin == "1") {
+                    setState(() {
+                      isCheckin = true;
+                    });
+                    _startTimer(mapaAgenda[index].checkin);
+                  } else {
+                    setState(() {
+                      isCheckin = false;
+                    });
+                  }
 
                   if (this.mounted) {
                     // check whether the state object is in tree
